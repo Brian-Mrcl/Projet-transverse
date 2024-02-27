@@ -7,6 +7,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((25, 50))
         self.image.fill('Red')
         self.rect = self.image.get_rect(midbottom=(550,400))
+
         self.xmap = 0
         self.gravity = 0
         self.game_active =True
@@ -74,4 +75,27 @@ class Map(pygame.sprite.Sprite):
         self.rect.x = self.begin - xmap
 
 
-# class Enemy():
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, spawn_x, min_x,max_x):
+        super().__init__()
+        self.image = pygame.Surface((25, 50))
+        self.image.fill('Blue')
+        self.rect = self.image.get_rect(bottomleft=(spawn_x, 400))
+
+        self.min_x = min_x
+        self.max_x = max_x
+        self.moving_side = 1
+        self.x_map = 0
+        # x_pos is the theorical position, whithout considering the map movement
+        self.x_pos = spawn_x
+
+    def moving(self):
+        if self.rect.left< self.min_x-self.x_map:
+            self.moving_side = 1
+        if self.rect.right> self.max_x-self.x_map:
+            self.moving_side = -1
+        self.x_pos += self.moving_side* 2
+        self.rect.x = self.x_pos - self.x_map
+    def update(self, x_map):
+        self.x_map = x_map
+        self.moving()

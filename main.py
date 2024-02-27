@@ -22,12 +22,17 @@ player = pygame.sprite.GroupSingle()
 
 # moving map
 x_map = 0
-# creating map
+#creating map
 map_group = pygame.sprite.Group()
 map_group.add(sprites.Map(100, 400))
 map_group.add(sprites.Map(500, 900))
 map_group.add(sprites.Map(1100, 1300))
 map_group.add(sprites.Map(1400, 1900))
+
+# creating enemy group and placing some enemys
+enemy_group = pygame.sprite.Group()
+enemy_group.add(sprites.Enemy(1150, 1100,1300))
+enemy_group.add(sprites.Enemy(1500, 1400,1900))
 
 while True:
     # events loop
@@ -46,11 +51,15 @@ while True:
 
     # actions if a party is playing
     if game_active:
-        screen.fill((255, 255, 255))
+        screen.fill('Grey')
 
         # Map
         map_group.draw(screen)
         map_group.update(x_map)
+
+        # enemy
+        enemy_group.draw(screen)
+        enemy_group.update(x_map)
 
         # player
         player.draw(screen)
@@ -60,7 +69,8 @@ while True:
         else:
             x_map, game_active = player.sprite.update(collide_map)
 
-
+        if game_active and pygame.sprite.spritecollide(player.sprite, enemy_group, False):
+            game_active = False
 
     # actions if we are in the menu
     else:
