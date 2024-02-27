@@ -1,11 +1,21 @@
 import pygame
 from sys import exit
 
+from modules import sprites
+
+# initialization
 pygame.init()
 screen = pygame.display.set_mode((1100,600))
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 game_active = False
+
+# importing font
+text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
+
+# creating text surfaces
+title_surf = text_font.render("MarHess",True, 'Red')
+title_rect = title_surf.get_rect(center=(550,100))
 
 while True:
     # events loop
@@ -23,10 +33,11 @@ while True:
 
     # actions if a party is playing
     if game_active:
-        print("Playing")
+        screen.fill((255, 255, 255))
     # actions if we are in the menu
     else:
         screen.fill((94, 129, 162))
+        screen.blit(title_surf, title_rect)
 
 
     # update the screen and set 60 frame per seconds
