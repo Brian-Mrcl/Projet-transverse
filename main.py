@@ -17,6 +17,16 @@ text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
 title_surf = text_font.render("MarHess",True, 'Red')
 title_rect = title_surf.get_rect(center=(550,100))
 
+# player initialization
+player = pygame.sprite.GroupSingle()
+player.add(sprites.Player())
+
+# moving map
+x_map = 0
+# creating map
+map_group = pygame.sprite.Group()
+map_group.add(sprites.Map(100, 300))
+
 while True:
     # events loop
     for event in pygame.event.get():
@@ -26,7 +36,7 @@ while True:
             exit()
         #actions if a party is playing, for timers
         if game_active:
-            print("Playing")
+            pass
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             game_active = True
@@ -34,6 +44,16 @@ while True:
     # actions if a party is playing
     if game_active:
         screen.fill((255, 255, 255))
+
+        # player
+        player.draw(screen)
+        x_map = player.sprite.update()
+        print(x_map)
+        # Map
+        map_group.draw(screen)
+        map_group.update(x_map)
+
+
     # actions if we are in the menu
     else:
         screen.fill((94, 129, 162))
