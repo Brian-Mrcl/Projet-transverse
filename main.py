@@ -19,13 +19,15 @@ title_rect = title_surf.get_rect(center=(550,100))
 
 # player initialization
 player = pygame.sprite.GroupSingle()
-player.add(sprites.Player())
 
 # moving map
 x_map = 0
 # creating map
 map_group = pygame.sprite.Group()
-map_group.add(sprites.Map(100, 300))
+map_group.add(sprites.Map(100, 400))
+map_group.add(sprites.Map(500, 900))
+map_group.add(sprites.Map(1100, 1300))
+map_group.add(sprites.Map(1400, 1900))
 
 while True:
     # events loop
@@ -39,19 +41,25 @@ while True:
             pass
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            player.add(sprites.Player())
             game_active = True
 
     # actions if a party is playing
     if game_active:
         screen.fill((255, 255, 255))
 
-        # player
-        player.draw(screen)
-        x_map = player.sprite.update()
-        print(x_map)
         # Map
         map_group.draw(screen)
         map_group.update(x_map)
+
+        # player
+        player.draw(screen)
+        collide_map = pygame.sprite.spritecollide(player.sprite, map_group, False)
+        if collide_map:
+            x_map, game_active = player.sprite.update(collide_map[0])
+        else:
+            x_map, game_active = player.sprite.update(collide_map)
+
 
 
     # actions if we are in the menu
