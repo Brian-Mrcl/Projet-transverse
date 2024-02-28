@@ -4,7 +4,7 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((25, 50))
+        self.image = pygame.Surface((45, 70))
         self.image.fill('Red')
         self.rect = self.image.get_rect(midbottom=(550,400))
 
@@ -42,8 +42,8 @@ class Player(pygame.sprite.Sprite):
     def moving(self,collide_map):
         left, right = True, True
         if collide_map:
-            if self.rect.bottom<=410:
-                self.rect.bottom = 401
+            if self.rect.bottom <= collide_map.get_height() +30:
+                self.rect.bottom = collide_map.get_height() +1
                 self.input_jumping()
             else:
                 if self.rect.center < collide_map.get_center():
@@ -61,26 +61,29 @@ class Player(pygame.sprite.Sprite):
 
 
 class Map(pygame.sprite.Sprite):
-    def __init__(self, begin_coordinate, end_coordinate):
+    def __init__(self, begin_coordinate, end_coordinate, height=400):
         super().__init__()
         self.begin = begin_coordinate
         self.end = end_coordinate
         self.image = pygame.Surface((self.end - self.begin, 200))
         self.image.fill('Green')
-        self.rect = self.image.get_rect(topleft=(self.begin, 400))
+        self.rect = self.image.get_rect(topleft=(self.begin, height))
+        self.height = height
 
     def get_center(self):
         return self.rect.center
+    def get_height(self):
+        return self.height
     def update(self,xmap):
         self.rect.x = self.begin - xmap
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, spawn_x, min_x,max_x):
+    def __init__(self, spawn_x, min_x,max_x, height=400):
         super().__init__()
         self.image = pygame.Surface((25, 50))
         self.image.fill('Blue')
-        self.rect = self.image.get_rect(bottomleft=(spawn_x, 400))
+        self.rect = self.image.get_rect(bottomleft=(spawn_x, height))
 
         self.min_x = min_x
         self.max_x = max_x

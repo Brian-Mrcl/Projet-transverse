@@ -26,13 +26,13 @@ x_map = 0
 map_group = pygame.sprite.Group()
 map_group.add(sprites.Map(100, 400))
 map_group.add(sprites.Map(500, 900))
-map_group.add(sprites.Map(1100, 1300))
-map_group.add(sprites.Map(1400, 1900))
+map_group.add(sprites.Map(1100, 1300,500))
+map_group.add(sprites.Map(1400, 1900,300))
 
 # creating enemy group and placing some enemys
 enemy_group = pygame.sprite.Group()
-enemy_group.add(sprites.Enemy(1150, 1100,1300))
-enemy_group.add(sprites.Enemy(1500, 1400,1900))
+enemy_group.add(sprites.Enemy(1150, 1100,1300,500))
+enemy_group.add(sprites.Enemy(1500, 1400,1900,300))
 
 while True:
     # events loop
