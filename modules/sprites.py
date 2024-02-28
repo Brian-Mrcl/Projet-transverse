@@ -79,10 +79,14 @@ class Map(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, spawn_x, min_x,max_x, height=400):
+    def __init__(self, spawn_x, min_x,max_x, type='big', height=400):
         super().__init__()
-        self.image = pygame.Surface((25, 50))
-        self.image.fill('Blue')
+        if type == 'big':
+            self.image = pygame.Surface((25, 50))
+            self.image.fill('Blue')
+        elif type == 'small':
+            self.image = pygame.Surface((25, 25))
+            self.image.fill('Pink')
         self.rect = self.image.get_rect(bottomleft=(spawn_x, height))
 
         self.min_x = min_x
