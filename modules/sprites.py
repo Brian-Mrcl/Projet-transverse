@@ -38,6 +38,8 @@ class Player(pygame.sprite.Sprite):
                 self.xmap += 5
             else:
                 self.rect.x += 5
+    def get_bottom(self):
+        return self.rect.bottom
 
     def moving(self,collide_map):
         left, right = True, True
@@ -106,3 +108,5 @@ class Enemy(pygame.sprite.Sprite):
     def update(self, x_map):
         self.x_map = x_map
         self.moving()
+    def get_top(self):
+        return self.rect.top

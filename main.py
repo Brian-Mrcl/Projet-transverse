@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 
 from modules import sprites
+from modules import levels
 
 # initialization
 pygame.init()
@@ -22,21 +23,8 @@ player = pygame.sprite.GroupSingle()
 
 # moving map
 x_map = 0
-#creating map
-map_group = pygame.sprite.Group()
-map_group.add(sprites.Map(100, 400))
-map_group.add(sprites.Map(500, 900))
-map_group.add(sprites.Map(1100, 1300,500))
-map_group.add(sprites.Map(1400, 1900,300))
-map_group.add(sprites.Map(2000, 2500))
-map_group.add(sprites.Map(2600, 2610))
 
-# creating enemy group and placing some enemys
-enemy_group = pygame.sprite.Group()
-big = 'big'
-small = 'small'
-enemy_group.add(sprites.Enemy( 1100,1300,big,500))
-enemy_group.add(sprites.Enemy( 1400,1900,small,300))
+level = 1
 
 while True:
     # events loop
@@ -51,6 +39,8 @@ while True:
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             player.add(sprites.Player())
+            if level == 1:
+                map_group, enemy_group = levels.level1()
             game_active = True
 
     # actions if a party is playing
@@ -73,9 +63,17 @@ while True:
         else:
             x_map, game_active = player.sprite.update(collide_map)
 
-        if game_active and pygame.sprite.spritecollide(player.sprite, enemy_group, False):
-            game_active = False
+        if game_active:
+            enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
+            if enemy_collide:
+                if player.sprite.get_bottom() <= enemy_collide[0].get_top()+20:
+                    enemy_collide[0].kill()
+                else:
+                    game_active = False
 
+        if not game_active:
+            map_group.empty()
+            enemy_group.empty()
     # actions if we are in the menu
     else:
         screen.fill((94, 129, 162))
