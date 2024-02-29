@@ -38,8 +38,6 @@ class Player(pygame.sprite.Sprite):
                 self.xmap += 5
             else:
                 self.rect.x += 5
-    def get_bottom(self):
-        return self.rect.bottom
 
     def moving(self,collide_map):
         left, right = True, True
@@ -52,15 +50,17 @@ class Player(pygame.sprite.Sprite):
                     right = False
                 else:
                     left = False
-
-
         self.apply_gravity()
         self.walking(left,right)
 
     def update(self,collide_map):
         self.moving(collide_map)
         return (self.xmap, self.game_active)
-
+    def get_bottom(self):
+        return self.rect.bottom
+    def forced_jump(self):
+        # applyed when you kill an enemy
+        self.gravity=-10
 
 class Map(pygame.sprite.Sprite):
     def __init__(self, begin_coordinate, end_coordinate, height=400):

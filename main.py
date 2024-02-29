@@ -6,7 +6,7 @@ from modules import levels
 
 # initialization
 pygame.init()
-screen = pygame.display.set_mode((1100,600))
+screen = pygame.display.set_mode((1100,600), flags= pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 game_active = False
@@ -68,6 +68,7 @@ while True:
             if enemy_collide:
                 if player.sprite.get_bottom() <= enemy_collide[0].get_top()+20:
                     enemy_collide[0].kill()
+                    player.sprite.forced_jump()
                 else:
                     game_active = False
 
