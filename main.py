@@ -68,7 +68,10 @@ while True:
             if enemy_collide:
                 if player.sprite.get_bottom() <= enemy_collide[0].get_top()+20:
                     enemy_collide[0].kill()
-                    player.sprite.forced_jump()
+                    if pygame.key.get_pressed()[pygame.K_SPACE]:
+                        player.sprite.forced_jump()
+                    else:
+                        player.sprite.rebond()
                 else:
                     game_active = False
 

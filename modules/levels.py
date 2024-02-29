@@ -6,6 +6,7 @@ def level1():
     map_group = pygame.sprite.Group()
     map_group.add(sprites.Map(100, 400))
     map_group.add(sprites.Map(500, 900))
+    map_group.add(sprites.Map(900, 1000, 100))
     map_group.add(sprites.Map(1100, 1300, 500))
     map_group.add(sprites.Map(1400, 1900, 300))
     map_group.add(sprites.Map(2000, 2500))

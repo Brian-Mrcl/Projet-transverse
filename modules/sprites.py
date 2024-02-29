@@ -9,29 +9,45 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=(550,400))
 
         self.xmap = 0
+        self.smooth_cam = 5
         self.gravity = 0
         self.game_active =True
+
         self.wall_shift = 0
+        self.wall_shift_to_left = bool
+
+
 
     def input_jumping(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             self.gravity = -20
+            return True
         else:
             self.gravity = 0
+            return False
     def apply_gravity(self):
         self.gravity += 1
         self.rect.y += self.gravity
         if self.rect.bottom > 800:
-            self.game_active = False
-            self.kill()
+            self.destroy()
+    def destroy(self):
+        self.game_active = False
+        self.kill()
 
     def walking(self, left, right):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and left:
-            if self.rect.x -5<=450:
-                self.xmap -= 5
+            if self.rect.x -5 <= 450:
+                if self.smooth_cam:
+                    self.smooth_cam -= 1
+                    self.xmap -= 3
+                    self.rect.x -=2
+                else:
+                    self.xmap -= 5
+
             else:
+                self.smooth_cam = 5
                 self.rect.x -= 5
         if keys[pygame.K_RIGHT] and right:
             if self.rect.x + 5 >= 650:
@@ -41,15 +57,38 @@ class Player(pygame.sprite.Sprite):
 
     def moving(self,collide_map):
         left, right = True, True
-        if collide_map:
-            if self.rect.bottom <= collide_map.get_height() +30:
-                self.rect.bottom = collide_map.get_height() +1
-                self.input_jumping()
+        if self.wall_shift:
+            if self.wall_shift_to_left:
+                self.rect.x -= 5
+                self.wall_shift -=1
             else:
-                if self.rect.center < collide_map.get_center():
-                    right = False
+                self.rect.x += 5
+                self.wall_shift -= 1
+            if self.wall_shift>10:
+                left,right = False,False
+        else:
+            if collide_map:
+                if self.rect.bottom <= collide_map.get_height() + 30:
+                    if self.gravity > 28:
+                        self.destroy()
+                    self.rect.bottom = collide_map.get_height() + 1
+                    self.input_jumping()
                 else:
-                    left = False
+                    if self.rect.center < collide_map.get_center():
+                        right = False
+                        self.gravity = 3
+                        if self.input_jumping():
+                            self.wall_shift = 20
+                            self.rect.x -= 5
+                            self.wall_shift_to_left = True
+                    else:
+                        left = False
+                        self.gravity = 3
+                        if self.input_jumping():
+                            self.wall_shift = 20
+                            self.rect.x += 5
+                            self.wall_shift_to_left = False
+
         self.apply_gravity()
         self.walking(left,right)
 
@@ -60,6 +99,9 @@ class Player(pygame.sprite.Sprite):
         return self.rect.bottom
     def forced_jump(self):
         # applyed when you kill an enemy
+        self.gravity=-20
+    def rebond(self):
+        # applyed when you kill an enemy
         self.gravity=-10
 
 class Map(pygame.sprite.Sprite):
@@ -67,7 +109,7 @@ class Map(pygame.sprite.Sprite):
         super().__init__()
         self.begin = begin_coordinate
         self.end = end_coordinate
-        self.image = pygame.Surface((self.end - self.begin, 200))
+        self.image = pygame.Surface((self.end - self.begin, 400))
         self.image.fill('Green')
         self.rect = self.image.get_rect(topleft=(self.begin, height))
         self.height = height
