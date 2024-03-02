@@ -11,12 +11,10 @@ class Player(pygame.sprite.Sprite):
         self.xmap = 0
         self.smooth_cam = 5
         self.gravity = 0
-        self.game_active =True
+        self.game_active =1
 
         self.wall_shift = 0
         self.wall_shift_to_left = bool
-
-
 
     def input_jumping(self):
         keys = pygame.key.get_pressed()
@@ -32,8 +30,7 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom > 800:
             self.destroy()
     def destroy(self):
-        self.game_active = False
-        self.kill()
+        self.game_active = 0
 
     def walking(self, left, right):
         keys = pygame.key.get_pressed()
@@ -55,7 +52,9 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.x += 5
 
-    def moving(self,collide_map):
+    def moving(self,collide):
+        if self.rect.top > 600:
+            self.destroy()
         left, right = True, True
         if self.wall_shift:
             if self.wall_shift_to_left:
@@ -67,28 +66,28 @@ class Player(pygame.sprite.Sprite):
             if self.wall_shift>10:
                 left,right = False,False
         else:
-            if collide_map:
-                if self.rect.bottom <= collide_map.get_height() + 30:
-                    if self.gravity > 28:
-                        self.destroy()
-                    self.rect.bottom = collide_map.get_height() + 1
-                    self.input_jumping()
-                else:
-                    if self.rect.center < collide_map.get_center():
-                        right = False
-                        self.gravity = 3
-                        if self.input_jumping():
-                            self.wall_shift = 20
-                            self.rect.x -= 5
-                            self.wall_shift_to_left = True
+            for collide_map in collide:
+                if collide_map:
+                    if self.rect.bottom <= collide_map.get_height() + 30:
+                        if self.gravity > 28:
+                            self.destroy()
+                        self.rect.bottom = collide_map.get_height() + 1
+                        self.input_jumping()
                     else:
-                        left = False
-                        self.gravity = 3
-                        if self.input_jumping():
-                            self.wall_shift = 20
-                            self.rect.x += 5
-                            self.wall_shift_to_left = False
-
+                        if self.rect.center < collide_map.get_center():
+                            right = False
+                            self.gravity = 3
+                            if self.input_jumping():
+                                self.wall_shift = 20
+                                self.rect.x -= 5
+                                self.wall_shift_to_left = True
+                        else:
+                            left = False
+                            self.gravity = 3
+                            if self.input_jumping():
+                                self.wall_shift = 20
+                                self.rect.x += 5
+                                self.wall_shift_to_left = False
         self.apply_gravity()
         self.walking(left,right)
 

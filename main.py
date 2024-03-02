@@ -9,7 +9,8 @@ pygame.init()
 screen = pygame.display.set_mode((1100,600), flags= pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
-game_active = False
+game_active = 0
+# (GAMES STATES: 0: game over, 1: game active, 2: menu)
 
 # importing font
 text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
@@ -41,7 +42,7 @@ while True:
             player.add(sprites.Player())
             if level == 1:
                 map_group, enemy_group = levels.level1()
-            game_active = True
+            game_active = 1
 
     # actions if a party is playing
     if game_active:
@@ -58,10 +59,7 @@ while True:
         # player
         player.draw(screen)
         collide_map = pygame.sprite.spritecollide(player.sprite, map_group, False)
-        if collide_map:
-            x_map, game_active = player.sprite.update(collide_map[0])
-        else:
-            x_map, game_active = player.sprite.update(collide_map)
+        x_map, game_active = player.sprite.update(collide_map)
 
         if game_active:
             enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
@@ -73,9 +71,10 @@ while True:
                     else:
                         player.sprite.rebond()
                 else:
-                    game_active = False
+                    game_active = 0
 
         if not game_active:
+            player.sprite.kill()
             map_group.empty()
             enemy_group.empty()
     # actions if we are in the menu
