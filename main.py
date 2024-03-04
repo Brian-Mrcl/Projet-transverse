@@ -27,6 +27,8 @@ x_map = 0
 
 level = 1
 
+sky_surface = pygame.image.load('graphics/sky.png').convert()
+
 while True:
     # events loop
     for event in pygame.event.get():
@@ -46,7 +48,8 @@ while True:
 
     # actions if a party is playing
     if game_active:
-        screen.fill('Grey')
+        # Putting the sky
+        screen.blit(sky_surface, (0,0))
 
         # Map
         map_group.draw(screen)
