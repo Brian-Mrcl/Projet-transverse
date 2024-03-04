@@ -100,7 +100,7 @@ class Player(pygame.sprite.Sprite):
         # applyed when you kill an enemy
         self.gravity=-20
     def rebond(self):
-        # applyed when you kill an enemy
+        # applied when you kill an enemy
         self.gravity=-10
 
 class Map(pygame.sprite.Sprite):
@@ -136,7 +136,7 @@ class Enemy(pygame.sprite.Sprite):
         self.max_x = max_x
         self.moving_side = 1
         self.x_map = 0
-        # x_pos is the theorical position, whithout considering the map movement
+        # x_pos is the theorical position, without considering the map movement
         self.x_pos = (min_x+max_x)//2
 
     def moving(self):
@@ -151,3 +151,14 @@ class Enemy(pygame.sprite.Sprite):
         self.moving()
     def get_top(self):
         return self.rect.top
+
+
+class Button(pygame.sprite.Sprite):
+    def __init__(self, text, height, width):
+        super().__init__()
+        self.text = text
+        self.height = height
+        self.width = width
+
+    def get_bottom(self):
+        return self.rect.bottom
