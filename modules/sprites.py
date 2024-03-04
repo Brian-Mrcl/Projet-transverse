@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
 
     def walking(self, left, right):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and left:
+        if (keys[pygame.K_LEFT] or keys[pygame.K_q]) and left:
             if self.rect.x -5 <= 450:
                 if self.smooth_cam:
                     self.smooth_cam -= 1
@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.smooth_cam = 5
                 self.rect.x -= 5
-        if keys[pygame.K_RIGHT] and right:
+        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and right:
             if self.rect.x + 5 >= 650:
                 self.xmap += 5
             else:
@@ -110,7 +110,7 @@ class Map(pygame.sprite.Sprite):
         self.end = end_coordinate
         self.image = pygame.Surface((self.end - self.begin, 400))
         self.rect = self.image.get_rect(topleft=(self.begin, height))
-        self.rect = pygame.Rect()
+
         self.height = height
 
     def get_center(self):

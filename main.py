@@ -80,16 +80,26 @@ while True:
             player.sprite.kill()
             map_group.empty()
             enemy_group.empty()
-    # actions if we are in the menu
+
     elif game_state == 0:
         black = (0, 0, 0)
-        screen.fill(black)
+        red = (255, 0, 0)
 
-    elif game_state == -1:
+        font = pygame.font.Font('font/SuperMario256.ttf', 150)  # the police chracter for the word game over
+        game_over_text = font.render("Game Over", True, red)
+
+        text_dim = game_over_text.get_rect()  # dimension of the text
+
+        text_dim.center = (1100 // 2, 600 // 2)  # center of the image going modifying text_dim
+
+        # screen.fill(black)
+        # screen.blit(title_surf, title_rect)
+
+        screen.blit(game_over_text, text_dim)
+    # actions if we are in the menu
+    elif game_state == 0:
         screen.fill((94, 129, 162))
         screen.blit(title_surf, title_rect)
-
-
 
 
     # update the screen and set 60 frame per seconds
