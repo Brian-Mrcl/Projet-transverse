@@ -82,8 +82,14 @@ while True:
             enemy_group.empty()
     # actions if we are in the menu
     elif game_state == 0:
+        black = (0, 0, 0)
+        screen.fill(black)
+
+    elif game_state == -1:
         screen.fill((94, 129, 162))
         screen.blit(title_surf, title_rect)
+
+
 
 
     # update the screen and set 60 frame per seconds

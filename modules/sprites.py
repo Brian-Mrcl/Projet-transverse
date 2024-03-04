@@ -109,8 +109,8 @@ class Map(pygame.sprite.Sprite):
         self.begin = begin_coordinate
         self.end = end_coordinate
         self.image = pygame.Surface((self.end - self.begin, 400))
-        self.image.fill('Green')
         self.rect = self.image.get_rect(topleft=(self.begin, height))
+        self.rect = pygame.Rect()
         self.height = height
 
     def get_center(self):
