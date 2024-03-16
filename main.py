@@ -10,7 +10,7 @@ screen = pygame.display.set_mode((1100,600), flags= pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 game_state = 0
-# (GAMES STATES: 0: game over, 1: game active, 2: menu)
+# (GAMES STATES: -1: menu;   0: game over;    1: game active)
 
 # importing font
 text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
@@ -82,22 +82,16 @@ while True:
             enemy_group.empty()
 
     elif game_state == 0:
-        black = (0, 0, 0)
-        red = (255, 0, 0)
-
         font = pygame.font.Font('font/SuperMario256.ttf', 150)  # the police chracter for the word game over
-        game_over_text = font.render("Game Over", True, red)
+        game_over_text = font.render("Game Over", True, (255,0,0))
 
         text_dim = game_over_text.get_rect()  # dimension of the text
-
         text_dim.center = (1100 // 2, 600 // 2)  # center of the image going modifying text_dim
-
-        # screen.fill(black)
-        # screen.blit(title_surf, title_rect)
-
         screen.blit(game_over_text, text_dim)
+
+
     # actions if we are in the menu
-    elif game_state == 0:
+    elif game_state == -1:
         screen.fill((94, 129, 162))
         screen.blit(title_surf, title_rect)
 

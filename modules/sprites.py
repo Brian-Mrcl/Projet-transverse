@@ -109,8 +109,8 @@ class Map(pygame.sprite.Sprite):
         self.begin = begin_coordinate
         self.end = end_coordinate
         self.image = pygame.Surface((self.end - self.begin, 400))
+        self.image.fill('Green')
         self.rect = self.image.get_rect(topleft=(self.begin, height))
-
         self.height = height
 
     def get_center(self):
@@ -151,6 +151,8 @@ class Enemy(pygame.sprite.Sprite):
         self.moving()
     def get_top(self):
         return self.rect.top
+
+
 
 
 class Button(pygame.sprite.Sprite):
