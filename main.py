@@ -6,7 +6,7 @@ from modules import levels
 
 # initialization
 pygame.init()
-screen = pygame.display.set_mode((1100,600), flags= pygame.RESIZABLE)
+screen = pygame.display.set_mode((1100,600))
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 game_state = 0

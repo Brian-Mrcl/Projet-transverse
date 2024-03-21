@@ -17,24 +17,53 @@ class Player(pygame.sprite.Sprite):
         self.wall_shift_to_left = bool
 
     def input_jumping(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            self.gravity = -20
-            return True
-        else:
-            self.gravity = 0
-            return False
+        space_pressed = pygame.key.get_pressed()[pygame.K_SPACE]
+
+        if space_pressed:
+            if self.can_moove['down'] == False:
+                self.gravity = -20
+            elif self.can_moove['left'] == False:
+                self.wall_shift = 20
+                self.rect.x += 5
+                self.wall_shift_to_left = False
+            elif self.can_moove['right'] == False:
+                self.wall_shift = 20
+                self.rect.x -= 5
+                self.wall_shift_to_left = True
+
+        if self.wall_shift:
+            if self.wall_shift_to_left:
+                self.rect.x -= 5
+                self.wall_shift -= 1
+            else:
+                self.rect.x += 5
+                self.wall_shift -= 1
+
+
     def apply_gravity(self):
-        self.gravity += 1
-        self.rect.y += self.gravity
-        if self.rect.bottom > 800:
-            self.destroy()
+        if self.can_moove['left'] == False or self.can_moove['right'] == False:
+            self.gravity = 3
+
+        if self.gravity < 0:
+            if self.can_moove['up']:
+                self.rect.y += self.gravity
+                self.gravity += 1
+            else:
+                self.gravity = 0
+        else:
+            if self.can_moove['down']:
+                self.rect.y += self.gravity
+                self.gravity += 1
+            else:
+                self.gravity = 0
+
+
     def destroy(self):
         self.game_active = 0
 
-    def walking(self, left, right):
+    def walking(self):
         keys = pygame.key.get_pressed()
-        if (keys[pygame.K_LEFT] or keys[pygame.K_q]) and left:
+        if (keys[pygame.K_LEFT] or keys[pygame.K_q]) and self.can_moove['left'] and not(self.wall_shift and self.wall_shift_to_left):
             if self.rect.x -5 <= 450:
                 if self.smooth_cam:
                     self.smooth_cam -= 1
@@ -46,53 +75,47 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.smooth_cam = 5
                 self.rect.x -= 5
-        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and right:
+        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.can_moove['right'] and not(self.wall_shift and not self.wall_shift_to_left):
             if self.rect.x + 5 >= 650:
                 self.xmap += 5
             else:
                 self.rect.x += 5
 
-    def moving(self,collide):
+    def moving(self):
+        # dying if we are under the map
         if self.rect.top > 600:
             self.destroy()
-        left, right = True, True
-        if self.wall_shift:
-            if self.wall_shift_to_left:
-                self.rect.x -= 5
-                self.wall_shift -=1
-            else:
-                self.rect.x += 5
-                self.wall_shift -= 1
-            if self.wall_shift>10:
-                left,right = False,False
-        else:
-            for collide_map in collide:
-                if collide_map:
-                    if self.rect.bottom <= collide_map.get_height() + 30:
-                        if self.gravity > 28:
-                            self.destroy()
-                        self.rect.bottom = collide_map.get_height() + 1
-                        self.input_jumping()
-                    else:
-                        if self.rect.center < collide_map.get_center():
-                            right = False
-                            self.gravity = 3
-                            if self.input_jumping():
-                                self.wall_shift = 20
-                                self.rect.x -= 5
-                                self.wall_shift_to_left = True
-                        else:
-                            left = False
-                            self.gravity = 3
-                            if self.input_jumping():
-                                self.wall_shift = 20
-                                self.rect.x += 5
-                                self.wall_shift_to_left = False
+            return 0
+
+        # finding if the player can move in each direction based on the collisions
+        self.can_moove = {'up':True, 'down':True, 'left':True, 'right': True}
+
+        for collide_map in self.collide_list:
+            if collide_map:
+                # if we are over the map item
+                if self.rect.bottom <= collide_map.get_height() + 30:
+                    # death by fall
+                    if self.gravity > 28:
+                        self.destroy()
+                    self.rect.bottom = collide_map.get_height() + 1
+                    self.can_moove['down'] = False
+                # if the element is over
+                elif self.rect.bottom >= collide_map.get_bottom() - 10:
+                    self.can_moove['up'] = False
+                # the two last are for an element on right the on the left
+                elif self.rect.center < collide_map.get_center():
+                    self.can_moove['right'] = False
+                else:
+                    self.can_moove['left'] = False
+
+
+        self.input_jumping()
         self.apply_gravity()
-        self.walking(left,right)
+        self.walking()
 
     def update(self,collide_map):
-        self.moving(collide_map)
+        self.collide_list = collide_map
+        self.moving()
         return (self.xmap, self.game_active)
     def get_bottom(self):
         return self.rect.bottom
@@ -113,10 +136,11 @@ class Map(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(self.begin, height))
         self.height = height
 
-    def get_center(self):
-        return self.rect.center
-    def get_height(self):
-        return self.height
+    def get_center(self): return self.rect.center
+    def get_height(self): return self.height
+
+    def get_bottom(self): return self.rect.bottom
+
     def update(self,xmap):
         self.rect.x = self.begin - xmap
 
