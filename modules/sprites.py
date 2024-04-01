@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
 
         self.jump_imgs = [0,0]
         self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1.png").convert_alpha(), (55,75))
-        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2.png").convert_alpha(),(55, 75))
+        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2.png").convert_alpha(),(65, 75))
         self.jump_img_i = 0
 
         self.image = self.stand_img
@@ -134,8 +134,9 @@ class Player(pygame.sprite.Sprite):
     def animation(self):
         if self.can_moove['down'] and self.can_moove['right'] and self.can_moove['left'] and self.can_moove['up']:
             self.jump_img_i += 1
-            self.jump_img_i = self.jump_img_i%1
-            self.image = self.jump_imgs[self.jump_img_i]
+            if self.jump_img_i == 20:
+                self.jump_img_i =0
+            self.image = self.jump_imgs[self.jump_img_i//10]
 
     def update(self,collide_map):
         self.collide_list = collide_map
@@ -166,8 +167,12 @@ class Map(pygame.sprite.Sprite):
         super().__init__()
         self.begin = begin_coordinate
         self.end = end_coordinate
-        self.image = pygame.Surface((self.end - self.begin, 400))
-        self.image.fill('Green')
+
+        #self.image = pygame.Surface((self.end - self.begin, 400))
+        #self.image.fill('Green')
+        self.full_ground = pygame.image.load("graphics/ground.png")
+        self.image = self.full_ground.subsurface((1, 0, self.end - self.begin, 400))
+
         self.rect = self.image.get_rect(topleft=(self.begin, height))
         self.height = height
 
