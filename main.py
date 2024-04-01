@@ -38,13 +38,21 @@ while True:
             exit()
         #actions if a party is playing, for timers
         if game_state:
-            pass
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
+
         # else if space is pressed, actions to start a new party
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            player.add(sprites.Player())
-            if level == 1:
-                map_group, enemy_group = levels.level1()
-            game_state = 1
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player.add(sprites.Player())
+                if level == 1:
+                    map_group, enemy_group = levels.level1()
+                game_state = 1
+            elif event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                exit()
 
     # actions if a party is playing
     if game_state == 1:

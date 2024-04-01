@@ -16,33 +16,37 @@ class Player(pygame.sprite.Sprite):
         self.wall_shift = 0
         self.wall_shift_to_left = bool
 
-    def input_jumping(self):
-        space_pressed = pygame.key.get_pressed()[pygame.K_SPACE]
-
-        if space_pressed:
+    def jumping(self):
+        if self.pressed_keys['space']:
             if self.can_moove['down'] == False:
                 self.gravity = -20
             elif self.can_moove['left'] == False:
-                self.wall_shift = 20
-                self.rect.x += 5
+                self.wall_shift = 16
                 self.wall_shift_to_left = False
             elif self.can_moove['right'] == False:
-                self.wall_shift = 20
-                self.rect.x -= 5
+                self.wall_shift = 16
                 self.wall_shift_to_left = True
 
         if self.wall_shift:
             if self.wall_shift_to_left:
-                self.rect.x -= 5
-                self.wall_shift -= 1
+                if self.can_moove['left'] == True:
+                    self.rect.x -= 5
+                    self.wall_shift -= 1
+                else:
+                    self.wall_shift = 0
             else:
-                self.rect.x += 5
-                self.wall_shift -= 1
-
+                if self.can_moove['right'] == True:
+                    self.rect.x += 5
+                    self.wall_shift -= 1
+                else:
+                    self.wall_shift = 0
 
     def apply_gravity(self):
         if self.can_moove['left'] == False or self.can_moove['right'] == False:
             self.gravity = 3
+
+        if self.wall_shift == 15:
+            self.gravity = -20
 
         if self.gravity < 0:
             if self.can_moove['up']:
@@ -57,13 +61,17 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.gravity = 0
 
+        # dying if we are under the map
+        if self.rect.top > 600:
+            self.destroy()
+            return 0
 
     def destroy(self):
         self.game_active = 0
 
     def walking(self):
         keys = pygame.key.get_pressed()
-        if (keys[pygame.K_LEFT] or keys[pygame.K_q]) and self.can_moove['left'] and not(self.wall_shift and self.wall_shift_to_left):
+        if self.pressed_keys['left'] and self.can_moove['left'] and not(self.wall_shift and self.wall_shift_to_left):
             if self.rect.x -5 <= 450:
                 if self.smooth_cam:
                     self.smooth_cam -= 1
@@ -75,47 +83,56 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.smooth_cam = 5
                 self.rect.x -= 5
-        if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.can_moove['right'] and not(self.wall_shift and not self.wall_shift_to_left):
+        if self.pressed_keys['right'] and self.can_moove['right'] and not(self.wall_shift and not self.wall_shift_to_left):
             if self.rect.x + 5 >= 650:
                 self.xmap += 5
             else:
                 self.rect.x += 5
 
-    def moving(self):
-        # dying if we are under the map
-        if self.rect.top > 600:
-            self.destroy()
-            return 0
-
+    def moving_collision(self):
         # finding if the player can move in each direction based on the collisions
         self.can_moove = {'up':True, 'down':True, 'left':True, 'right': True}
 
         for collide_map in self.collide_list:
-            if collide_map:
-                # if we are over the map item
-                if self.rect.bottom <= collide_map.get_height() + 30:
-                    # death by fall
-                    if self.gravity > 28:
-                        self.destroy()
-                    self.rect.bottom = collide_map.get_height() + 1
-                    self.can_moove['down'] = False
-                # if the element is over
-                elif self.rect.bottom >= collide_map.get_bottom() - 10:
-                    self.can_moove['up'] = False
-                # the two last are for an element on right the on the left
-                elif self.rect.center < collide_map.get_center():
-                    self.can_moove['right'] = False
-                else:
-                    self.can_moove['left'] = False
+            # if we are over the map item
+            if self.rect.bottom <= collide_map.get_height() + 30:
+                # death by fall
+                if self.gravity > 28:
+                    self.destroy()
+                self.rect.bottom = collide_map.get_height() + 1
+                self.can_moove['down'] = False
+            # if the element is over
+            elif self.rect.bottom >= collide_map.get_bottom() - 10 and not( self.rect.right < collide_map.get_left() +5 or self.rect.left > collide_map.get_right() - 5):
+                self.can_moove['up'] = False
+            # the two last are for an element on right the on the left
+            elif self.rect.center[0] < collide_map.get_center()[0]:
+                self.can_moove['right'] = False
+                self.rect.right = collide_map.get_left()+1
+            else:
+                self.can_moove['left'] = False
+                self.rect.left = collide_map.get_right() - 1
 
+    def pressed_input(self):
+        keys = pygame.key.get_pressed()
+        self.pressed_keys = {'left': False, 'right': False, 'space': False}
 
-        self.input_jumping()
-        self.apply_gravity()
-        self.walking()
+        if not self.wall_shift and (keys[pygame.K_LEFT] or keys[pygame.K_q]):
+            self.pressed_keys['left'] = True
+        if not self.wall_shift and (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
+            self.pressed_keys['right'] = True
+        if keys[pygame.K_SPACE]:
+            self.pressed_keys['space'] = True
 
     def update(self,collide_map):
         self.collide_list = collide_map
-        self.moving()
+
+        self.pressed_input()
+        self.moving_collision()
+
+        self.jumping()
+        self.apply_gravity()
+
+        self.walking()
         return (self.xmap, self.game_active)
     def get_bottom(self):
         return self.rect.bottom
@@ -140,6 +157,10 @@ class Map(pygame.sprite.Sprite):
     def get_height(self): return self.height
 
     def get_bottom(self): return self.rect.bottom
+
+    def get_left(self): return self.rect.left
+
+    def get_right(self): return self.rect.right
 
     def update(self,xmap):
         self.rect.x = self.begin - xmap
