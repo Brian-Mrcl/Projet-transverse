@@ -4,8 +4,16 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((45, 70))
-        self.image.fill('Red')
+
+        self.stand_img = pygame.image.load("graphics/owl/standing.png").convert_alpha()
+        self.stand_img = pygame.transform.scale(self.stand_img, (55,75))
+
+        self.jump_imgs = [0,0]
+        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1.png").convert_alpha(), (55,75))
+        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2.png").convert_alpha(),(55, 75))
+        self.jump_img_i = 0
+
+        self.image = self.stand_img
         self.rect = self.image.get_rect(midbottom=(550,400))
 
         self.xmap = 0
@@ -123,6 +131,12 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE]:
             self.pressed_keys['space'] = True
 
+    def animation(self):
+        if self.can_moove['down'] and self.can_moove['right'] and self.can_moove['left'] and self.can_moove['up']:
+            self.jump_img_i += 1
+            self.jump_img_i = self.jump_img_i%1
+            self.image = self.jump_imgs[self.jump_img_i]
+
     def update(self,collide_map):
         self.collide_list = collide_map
 
@@ -133,7 +147,11 @@ class Player(pygame.sprite.Sprite):
         self.apply_gravity()
 
         self.walking()
+
+        self.animation()
         return (self.xmap, self.game_active)
+
+    #getter and external actions
     def get_bottom(self):
         return self.rect.bottom
     def forced_jump(self):
