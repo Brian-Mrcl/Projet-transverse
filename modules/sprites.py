@@ -1,16 +1,19 @@
 import pygame
+import random
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        self.stand_img = pygame.image.load("graphics/owl/standing.png").convert_alpha()
-        self.stand_img = pygame.transform.scale(self.stand_img, (55,75))
+        #one pixel is 3 pixel *3 ratio
+        ratio = 3
+
+        self.stand_img = pygame.transform.scale(pygame.image.load("graphics/owl/standing_23-30.png").convert_alpha(),(23 * ratio, 30 * ratio))
 
         self.jump_imgs = [0,0]
-        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1.png").convert_alpha(), (55,75))
-        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2.png").convert_alpha(),(65, 75))
+        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1_23-30.png").convert_alpha(), (23*ratio,30*ratio))
+        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_27-30.png").convert_alpha(),(27*ratio, 30*ratio))
         self.jump_img_i = 0
 
         self.image = self.stand_img
@@ -86,7 +89,8 @@ class Player(pygame.sprite.Sprite):
                     self.xmap -= 3
                     self.rect.x -=2
                 else:
-                    self.xmap -= 5
+                    if self.xmap>-300:
+                        self.xmap -= 5
 
             else:
                 self.smooth_cam = 5
@@ -132,11 +136,18 @@ class Player(pygame.sprite.Sprite):
             self.pressed_keys['space'] = True
 
     def animation(self):
-        if self.can_moove['down'] and self.can_moove['right'] and self.can_moove['left'] and self.can_moove['up']:
-            self.jump_img_i += 1
-            if self.jump_img_i == 20:
-                self.jump_img_i =0
-            self.image = self.jump_imgs[self.jump_img_i//10]
+        ratio = 3
+        # if no collision
+        if not self.collide_list:
+            if self.gravity<0:
+                self.jump_img_i += 2
+                if self.jump_img_i == 20:
+                    self.jump_img_i =0
+                self.image = self.jump_imgs[self.jump_img_i//10]
+            else:
+                self.image = self.jump_imgs[0]
+        else:
+            self.image = self.stand_img
 
     def update(self,collide_map):
         self.collide_list = collide_map

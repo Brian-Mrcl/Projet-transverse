@@ -5,6 +5,28 @@ def level1():
     # creating map
     map_group = pygame.sprite.Group()
     map_group.add(sprites.Map(100, 400))
+    map_group.add(sprites.Map(500, 1000))
+    map_group.add(sprites.Map(1200, 1500, 350))
+
+    map_group.add(sprites.Map(2050, 2400, 210))
+    map_group.add(sprites.Map(1700, 2150,350))
+    map_group.add(sprites.Map(2300, 2600, 400))
+
+
+    # creating enemy group and placing some enemys
+    enemy_group = pygame.sprite.Group()
+    big = 'big'
+    small = 'small'
+    enemy_group.add(sprites.Enemy(1700, 2050, small,350))
+
+
+    enemy_group.add(sprites.Enemy(5000, 130000, big, 500))
+    enemy_group.add(sprites.Enemy(140000, 190000, small, 300))
+    return map_group, enemy_group
+def level2():
+    # creating map
+    map_group = pygame.sprite.Group()
+    map_group.add(sprites.Map(100, 400))
     map_group.add(sprites.Map(500, 900))
     map_group.add(sprites.Map(700, 755, -100))
     map_group.add(sprites.Map(900, 1000, 100))
@@ -22,3 +44,5 @@ def level1():
     enemy_group.add(sprites.Enemy(1100, 1300, big, 500))
     enemy_group.add(sprites.Enemy(1400, 1900, small, 300))
     return map_group, enemy_group
+
+
