@@ -27,7 +27,7 @@ x_map = 0
 
 level = 1
 
-sky_surface = pygame.image.load('graphics/sky.png').convert()
+sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
 while True:
     # events loop
@@ -48,7 +48,7 @@ while True:
             if event.key == pygame.K_SPACE:
                 player.add(sprites.Player())
                 if level == 1:
-                    map_group, enemy_group = levels.level1()
+                    map_group, enemy_group, background_group = levels.level1()
                 game_state = 1
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -56,8 +56,14 @@ while True:
 
     # actions if a party is playing
     if game_state == 1:
+        #pygame.mouse.set_visible(False)
+
         # Putting the sky
         screen.blit(sky_surface, (0,0))
+
+        # Background
+        background_group.draw(screen)
+        background_group.update(x_map)
 
         # Map
         map_group.draw(screen)
@@ -90,6 +96,7 @@ while True:
             enemy_group.empty()
 
     elif game_state == 0:
+        pygame.mouse.set_visible(True)
         font = pygame.font.Font('font/SuperMario256.ttf', 150)  # the police chracter for the word game over
         game_over_text = font.render("Game Over", True, (255,0,0))
 
@@ -100,6 +107,7 @@ while True:
 
     # actions if we are in the menu
     elif game_state == -1:
+        pygame.mouse.set_visible(True)
         screen.fill((94, 129, 162))
         screen.blit(title_surf, title_rect)
 

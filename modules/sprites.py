@@ -9,16 +9,25 @@ class Player(pygame.sprite.Sprite):
         #one pixel is 3 pixel *3 ratio
         ratio = 3
 
-        self.stand_img = pygame.transform.scale(pygame.image.load("graphics/owl/standing_23-30.png").convert_alpha(),(23 * ratio, 30 * ratio))
+        self.stand_img = pygame.transform.scale(pygame.image.load("graphics/owl/standing_23-31.png").convert_alpha(),(23 * ratio, 31 * ratio))
 
         self.jump_imgs = [0,0]
-        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1_23-30.png").convert_alpha(), (23*ratio,30*ratio))
-        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_27-30.png").convert_alpha(),(27*ratio, 30*ratio))
+        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1_23-31.png").convert_alpha(), (23*ratio,31*ratio))
+        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_23-31.png").convert_alpha(),(23*ratio, 31*ratio))
         self.jump_img_i = 0
+
+        self.walk_imgs = [0,0]
+        self.walk_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/walk1_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+        self.walk_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/walk2_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+        self.walk_i = 0
+        self.in_walk = False
 
         self.image = self.stand_img
         self.rect = self.image.get_rect(midbottom=(550,400))
 
+        self.speed = 5
         self.xmap = 0
         self.smooth_cam = 5
         self.gravity = 0
@@ -26,6 +35,8 @@ class Player(pygame.sprite.Sprite):
 
         self.wall_shift = 0
         self.wall_shift_to_left = bool
+
+        self.cheat = False
 
     def jumping(self):
         if self.pressed_keys['space']:
@@ -82,24 +93,27 @@ class Player(pygame.sprite.Sprite):
 
     def walking(self):
         keys = pygame.key.get_pressed()
+        self.in_walk = False
         if self.pressed_keys['left'] and self.can_moove['left'] and not(self.wall_shift and self.wall_shift_to_left):
-            if self.rect.x -5 <= 450:
+            self.in_walk = True
+            if self.rect.x -self.speed <= 450:
                 if self.smooth_cam:
                     self.smooth_cam -= 1
                     self.xmap -= 3
                     self.rect.x -=2
                 else:
                     if self.xmap>-300:
-                        self.xmap -= 5
-
+                        self.xmap -= self.speed
             else:
-                self.smooth_cam = 5
-                self.rect.x -= 5
+                self.smooth_cam = self.speed
+                self.rect.x -= self.speed
         if self.pressed_keys['right'] and self.can_moove['right'] and not(self.wall_shift and not self.wall_shift_to_left):
-            if self.rect.x + 5 >= 650:
-                self.xmap += 5
+            if self.in_walk:self.in_walk = False
+            else: self.in_walk = True
+            if self.rect.x + self.speed >= 650:
+                self.xmap += self.speed
             else:
-                self.rect.x += 5
+                self.rect.x += self.speed
 
     def moving_collision(self):
         # finding if the player can move in each direction based on the collisions
@@ -134,6 +148,10 @@ class Player(pygame.sprite.Sprite):
             self.pressed_keys['right'] = True
         if keys[pygame.K_SPACE]:
             self.pressed_keys['space'] = True
+        if keys[pygame.K_c] and keys[pygame.K_h]:
+            self.cheat = True
+            self.rect.y = 100
+            self.speed = 20
 
     def animation(self):
         ratio = 3
@@ -147,16 +165,23 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = self.jump_imgs[0]
         else:
-            self.image = self.stand_img
+            if self.in_walk:
+                self.walk_i += 1
+                if self.walk_i == 20:
+                    self.walk_i = 0
+                self.image = self.walk_imgs[self.walk_i // 10]
+            else:
+                self.image = self.stand_img
 
     def update(self,collide_map):
         self.collide_list = collide_map
 
         self.pressed_input()
-        self.moving_collision()
+        if not self.cheat:
+            self.moving_collision()
 
-        self.jumping()
-        self.apply_gravity()
+            self.jumping()
+            self.apply_gravity()
 
         self.walking()
 
@@ -199,6 +224,15 @@ class Map(pygame.sprite.Sprite):
     def update(self,xmap):
         self.rect.x = self.begin - xmap
 
+class decoration(pygame.sprite.Sprite):
+    def __init__(self, begin_coordinate, type, height=400, scale = 1):
+        super().__init__()
+        if type == 'mountain':
+            pass
+        elif type == 'tree':
+            pass
+    def update(self, xmap):
+        self.rect.x = self.begin - xmap
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, min_x,max_x, type='big', height=400):
@@ -209,6 +243,9 @@ class Enemy(pygame.sprite.Sprite):
         elif type == 'small':
             self.image = pygame.Surface((25, 25))
             self.image.fill('Pink')
+        elif type == 'fly':
+            self.image = pygame.Surface((30, 20))
+            self.image.fill('red')
         self.rect = self.image.get_rect(bottomleft=((min_x+max_x)//2, height))
 
         self.min_x = min_x
