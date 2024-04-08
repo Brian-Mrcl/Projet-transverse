@@ -10,7 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
-game_state = -1
+game_state = 0
 # (GAMES STATES: -1: menu;   0: game over;    1: game active)
 
 # importing font
