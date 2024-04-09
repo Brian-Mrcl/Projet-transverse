@@ -104,7 +104,8 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and button_group.typeB == "Start" and button_group.colliderect(pygame.MOUSEMOTION):
+            if event.type == pygame.MOUSEBUTTONDOWN and button_group.typeB == "Start" and button_group.colliderect(
+                    pygame.MOUSEMOTION):
                 game_state = 0
 
     # update the screen and set 60 frame per seconds
