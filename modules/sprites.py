@@ -1,5 +1,6 @@
+# file containing the sprites: Player, Map, Enemy
+
 import pygame
-import random
 
 
 class Player(pygame.sprite.Sprite):
@@ -96,7 +97,7 @@ class Player(pygame.sprite.Sprite):
         self.in_walk = False
         if self.pressed_keys['left'] and self.can_moove['left'] and not(self.wall_shift and self.wall_shift_to_left):
             self.in_walk = True
-            if self.rect.x -self.speed <= 450:
+            if self.rect.x - self.speed <= 450:
                 if self.smooth_cam:
                     self.smooth_cam -= 1
                     self.xmap -= 3
@@ -110,7 +111,7 @@ class Player(pygame.sprite.Sprite):
         if self.pressed_keys['right'] and self.can_moove['right'] and not(self.wall_shift and not self.wall_shift_to_left):
             if self.in_walk:self.in_walk = False
             else: self.in_walk = True
-            if self.rect.x + self.speed >= 650:
+            if self.rect.x + self.speed >= 600:
                 self.xmap += self.speed
             else:
                 self.rect.x += self.speed
@@ -189,6 +190,18 @@ class Player(pygame.sprite.Sprite):
         return (self.xmap, self.game_active)
 
     #getter and external actions
+    def colliding_enemy(self, enemy_collide):
+        if enemy_collide:
+            print(self.rect.bottom, enemy_collide[0].get_top())
+            if self.rect.bottom <= enemy_collide[0].get_top() + 20:
+                enemy_collide[0].kill()
+                if self.pressed_keys['space']:
+                    self.forced_jump()
+                else:
+                    self.rebond()
+            else:
+                self.game_active = 0
+        return self.game_active
     def get_bottom(self):
         return self.rect.bottom
     def forced_jump(self):
@@ -207,7 +220,7 @@ class Map(pygame.sprite.Sprite):
         #self.image = pygame.Surface((self.end - self.begin, 400))
         #self.image.fill('Green')
         self.full_ground = pygame.image.load("graphics/ground.png")
-        self.image = self.full_ground.subsurface((1, 0, self.end - self.begin, 400))
+        self.image = self.full_ground.subsurface((1, 0, self.end - self.begin, 450))
 
         self.rect = self.image.get_rect(topleft=(self.begin, height))
         self.height = height
@@ -224,15 +237,39 @@ class Map(pygame.sprite.Sprite):
     def update(self,xmap):
         self.rect.x = self.begin - xmap
 
-class decoration(pygame.sprite.Sprite):
-    def __init__(self, begin_coordinate, type, height=400, scale = 1):
+class Decoration(pygame.sprite.Sprite):
+    def __init__(self, begin, type, height=400,scale=1,flow_end =0):
         super().__init__()
+        self.height = height
+        self.begin = begin
+        self.flow_end = flow_end
         if type == 'mountain':
             pass
         elif type == 'tree':
             pass
+        elif type == 'castle':
+            pass
+        elif type == 'tuto_display':
+            self.image = pygame.image.load("graphics/tuto/tuto_display.png").convert_alpha()
+            self.image = pygame.transform.rotozoom(self.image, 0, scale)
+            self.rect = self.image.get_rect(topleft=(begin, height))
+        elif type == 'bar':
+            self.image = pygame.Surface((1, scale))
+            self.image.fill('blue')
+            self.rect = self.image.get_rect(topleft=(begin, height))
+        elif 'text_' in type:
+            clean_text_font = pygame.font.Font('font/pixeled.ttf', int(scale))
+            self.image = clean_text_font.render(type[5:], True, '#424340')
+            self.rect = self.image.get_rect()
+
     def update(self, xmap):
-        self.rect.x = self.begin - xmap
+        current_x = self.begin - xmap
+        if self.flow_end==0:
+            self.rect.x = current_x
+        else:
+            if current_x < 1100 and current_x-self.flow_end >0:
+                self.rect.center = (1100//2, self.height)
+            else: self.rect.x=1200
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, min_x,max_x, type='big', height=400):
@@ -267,6 +304,27 @@ class Enemy(pygame.sprite.Sprite):
         self.moving()
     def get_top(self):
         return self.rect.top
+
+class End_point(pygame.sprite.Sprite):
+    def __init__(self, xleft, ybottom):
+        super().__init__()
+        self.xleft = xleft
+        self.ybottom = ybottom
+
+        self.image = pygame.image.load("graphics/endPoint.png").convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
+        self.rect = self.image.get_rect(bottomleft=(xleft,ybottom))
+
+        self.anim_state = 1
+
+    def animation(self):
+        self.rect.y += self.anim_state
+        if self.rect.bottom - self.ybottom == 15 or self.rect.bottom - self.ybottom == -15:
+            self.anim_state *=-1
+
+    def update(self, xmap):
+        self.rect.x = self.xleft - xmap
+        self.animation()
 
 
 

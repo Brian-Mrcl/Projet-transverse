@@ -3,20 +3,22 @@ from sys import exit
 
 from modules import sprites
 from modules import levels
+from modules import functions
 
 # initialization
 pygame.init()
 screen = pygame.display.set_mode((1100,600))
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
-game_state = 0
-# (GAMES STATES: -1: menu;   0: game over;    1: game active)
 
-# importing font
-text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
+# (GAMES STATES: -1: menu;   0: game over;    1: game active)
+game_state = 0
+
+# importing fonts
+mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
 
 # creating text surfaces
-title_surf = text_font.render("MarHess",True, 'Red')
+title_surf = mario_text_font.render("MarHess", True, 'Red')
 title_rect = title_surf.get_rect(center=(550,100))
 
 # player initialization
@@ -25,7 +27,8 @@ player = pygame.sprite.GroupSingle()
 # moving map
 x_map = 0
 
-level = 1
+level = 0
+achieved_level = [0,0,0,0]
 
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
@@ -47,8 +50,10 @@ while True:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player.add(sprites.Player())
+                if level == 0:
+                    map_group, enemy_group, background_group, end_point = levels.intro()
                 if level == 1:
-                    map_group, enemy_group, background_group = levels.level1()
+                    map_group, enemy_group, background_group, end_point = levels.level1()
                 game_state = 1
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -70,25 +75,23 @@ while True:
         map_group.update(x_map)
 
         # enemy
+        end_point.draw(screen)
+        end_point.update(x_map)
+
+        # End Point
         enemy_group.draw(screen)
         enemy_group.update(x_map)
 
         # player
         player.draw(screen)
+        # Updating the player, giving him the collision with the map, he return the shift of the map du to his movement and if he's dead
         collide_map = pygame.sprite.spritecollide(player.sprite, map_group, False)
         x_map, game_state = player.sprite.update(collide_map)
-
+        # updating the collisions of the player with enemys, return if he died
+        enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
         if game_state == 1:
-            enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
-            if enemy_collide:
-                if player.sprite.get_bottom() <= enemy_collide[0].get_top()+20:
-                    enemy_collide[0].kill()
-                    if pygame.key.get_pressed()[pygame.K_SPACE]:
-                        player.sprite.forced_jump()
-                    else:
-                        player.sprite.rebond()
-                else:
-                    game_state = 0
+            game_state = player.sprite.colliding_enemy(enemy_collide)
+
 
         if game_state != 1:
             player.sprite.kill()
