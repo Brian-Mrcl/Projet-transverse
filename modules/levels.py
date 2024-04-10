@@ -95,9 +95,8 @@ def level1():
     map_group.add(sprites.Map(4200 , 4500, 425))
     enemy_group.add(sprites.Enemy(3000+ 4*bb, 4200, fly, 425))
 
+    end_point.add(sprites.End_point(4350, 375))
 
-    enemy_group.add(sprites.Enemy(5000, 130000, big, 500))
-    enemy_group.add(sprites.Enemy(140000, 190000, small, 300))
     return map_group, enemy_group, background_group, end_point
 
 
@@ -113,7 +112,7 @@ def level2():
     map_group = pygame.sprite.Group()
     map_group.add(sprites.Map(100, 400))
     map_group.add(sprites.Map(500, 900))
-    map_group.add(sprites.Map(700, 755, -100))
+    map_group.add(sprites.Map(700, 755, -170))
     map_group.add(sprites.Map(900, 1000, 100))
     map_group.add(sprites.Map(1100, 1300, 500))
     map_group.add(sprites.Map(1400, 1900, 300))

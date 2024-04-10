@@ -2,7 +2,7 @@
 Key.Left = Wiimote.Up
 Key.Right = Wiimote.Down
 Key.Escape = HeldDown(Wiimote.A, 2.05)
-Key.C = HeldDown(Wiimote.One and Wiimote.Two and Wiimote.Left, 3.0)
-Key.H = HeldDown(Wiimote.One and Wiimote.Two and Wiimote.Left, 3.0)
+Key.C = HeldDown(Wiimote.One and Wiimote.Two and Wiimote.Left, 2.0)
+Key.H = HeldDown(Wiimote.One and Wiimote.Two and Wiimote.Left, 2.0)
 
 

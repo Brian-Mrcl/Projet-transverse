@@ -17,6 +17,9 @@ class Player(pygame.sprite.Sprite):
         self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_23-31.png").convert_alpha(),(23*ratio, 31*ratio))
         self.jump_img_i = 0
 
+        self.wall_right_img = pygame.transform.scale(pygame.image.load("graphics/owl/wall_23-31.png").convert_alpha(),(23 * ratio, 31 * ratio))
+        self.wall_left_img = pygame.transform.flip(self.wall_right_img, True, False)
+
         self.walk_imgs = [0,0]
         self.walk_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/walk1_23-31.png").convert_alpha(),
                                                    (23 * ratio, 31 * ratio))
@@ -37,27 +40,33 @@ class Player(pygame.sprite.Sprite):
         self.wall_shift = 0
         self.wall_shift_to_left = bool
 
-        self.cheat = False
+        self.cheat_mode = False
 
     def jumping(self):
+        # if space is pressed
         if self.pressed_keys['space']:
-            if self.can_moove['down'] == False:
+            # if we touch the floor and not touch a wall
+            if self.can_moove['down'] == False and not self.can_moove['left'] == False and not self.can_moove['right'] == False:
                 self.gravity = -20
+            # if we touch a wall on the left
             elif self.can_moove['left'] == False:
                 self.wall_shift = 16
                 self.wall_shift_to_left = False
+            # if we touch a wall on the right
             elif self.can_moove['right'] == False:
                 self.wall_shift = 16
                 self.wall_shift_to_left = True
-
+        # if we are doing a wall jump
         if self.wall_shift:
             if self.wall_shift_to_left:
+                # only if there's nothing on our left
                 if self.can_moove['left'] == True:
                     self.rect.x -= 5
                     self.wall_shift -= 1
                 else:
                     self.wall_shift = 0
             else:
+                # only if there's nothing on our right
                 if self.can_moove['right'] == True:
                     self.rect.x += 5
                     self.wall_shift -= 1
@@ -149,8 +158,14 @@ class Player(pygame.sprite.Sprite):
             self.pressed_keys['right'] = True
         if keys[pygame.K_SPACE]:
             self.pressed_keys['space'] = True
-        if keys[pygame.K_c] and keys[pygame.K_h]:
-            self.cheat = True
+    def cheat(self):
+        print('ohioihgih oghshog h')
+        if self.cheat_mode:
+            self.cheat_mode = False
+            self.speed = 5
+            self.rect.y = 200
+        else:
+            self.cheat_mode = True
             self.rect.y = 100
             self.speed = 20
 
@@ -171,6 +186,10 @@ class Player(pygame.sprite.Sprite):
                 if self.walk_i == 20:
                     self.walk_i = 0
                 self.image = self.walk_imgs[self.walk_i // 10]
+            elif not self.can_moove['right']:
+                self.image = self.wall_right_img
+            elif not self.can_moove['left']:
+                self.image = self.wall_left_img
             else:
                 self.image = self.stand_img
 
@@ -178,7 +197,7 @@ class Player(pygame.sprite.Sprite):
         self.collide_list = collide_map
 
         self.pressed_input()
-        if not self.cheat:
+        if not self.cheat_mode:
             self.moving_collision()
 
             self.jumping()

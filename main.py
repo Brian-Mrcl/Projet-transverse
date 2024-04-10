@@ -12,7 +12,7 @@ pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 
 # (GAMES STATES: -1: menu;   0: game over;    1: game active)
-game_state = 0
+game_state = -1
 
 # importing fonts
 mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
@@ -27,6 +27,7 @@ player = pygame.sprite.GroupSingle()
 # moving map
 x_map = 0
 
+# chose of level and level already finished (achieved_level[0] is intro)
 level = 0
 achieved_level = [0,0,0,0]
 
@@ -34,17 +35,24 @@ sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').conve
 
 while True:
     # events loop
+    keych = 0
     for event in pygame.event.get():
         # close window when asked
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
         #actions if a party is playing, for timers
-        if game_state:
+        if game_state == 1:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     exit()
+                if event.key == pygame.K_c:
+                    keych +=1
+                if event.key == pygame.K_h:
+                    keych+=1
+                if keych ==2:
+                    player.sprite.cheat()
 
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN:
@@ -52,8 +60,10 @@ while True:
                 player.add(sprites.Player())
                 if level == 0:
                     map_group, enemy_group, background_group, end_point = levels.intro()
-                if level == 1:
+                elif level == 1:
                     map_group, enemy_group, background_group, end_point = levels.level1()
+                elif level == 2:
+                    map_group, enemy_group, background_group, end_point = levels.level2()
                 game_state = 1
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -97,6 +107,14 @@ while True:
             player.sprite.kill()
             map_group.empty()
             enemy_group.empty()
+        elif pygame.sprite.spritecollide(player.sprite,end_point,False):
+            player.sprite.kill()
+            map_group.empty()
+            enemy_group.empty()
+            achieved_level[level] = 1
+            game_state = -1
+            level+=1
+
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
