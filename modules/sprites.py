@@ -7,28 +7,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
-        #one pixel is 3 pixel *3 ratio
-        ratio = 3
-
-        self.stand_img = pygame.transform.scale(pygame.image.load("graphics/owl/standing_23-31.png").convert_alpha(),(23 * ratio, 31 * ratio))
-
-        self.jump_imgs = [0,0]
-        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1_23-31.png").convert_alpha(), (23*ratio,31*ratio))
-        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_23-31.png").convert_alpha(),(23*ratio, 31*ratio))
-        self.jump_img_i = 0
-
-        self.wall_right_img = pygame.transform.scale(pygame.image.load("graphics/owl/wall_23-31.png").convert_alpha(),(23 * ratio, 31 * ratio))
-        self.wall_left_img = pygame.transform.flip(self.wall_right_img, True, False)
-
-        self.walk_imgs = [0,0]
-        self.walk_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/walk1_23-31.png").convert_alpha(),
-                                                   (23 * ratio, 31 * ratio))
-        self.walk_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/walk2_23-31.png").convert_alpha(),
-                                                   (23 * ratio, 31 * ratio))
-        self.walk_i = 0
+        self.import_image()
+        self.anim_index = 0
         self.in_walk = False
-
         self.image = self.stand_img
+
         self.rect = self.image.get_rect(midbottom=(550,400))
 
         self.speed = 5
@@ -41,6 +24,41 @@ class Player(pygame.sprite.Sprite):
         self.wall_shift_to_left = bool
 
         self.cheat_mode = False
+
+    def import_image(self):
+        # one pixel is 3 pixel *3 ratio
+        ratio = 3
+
+        self.stand_img = pygame.transform.scale(pygame.image.load("graphics/owl/standing_23-31.png").convert_alpha(),
+                                                (23 * ratio, 31 * ratio))
+
+        self.jump_imgs = [0, 0]
+        self.jump_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/jump1_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+        self.jump_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/jump2_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+
+        self.wall_right_img = pygame.transform.scale(pygame.image.load("graphics/owl/wall_23-31.png").convert_alpha(),
+                                                     (23 * ratio, 31 * ratio))
+        self.wall_left_img = pygame.transform.flip(self.wall_right_img, True, False)
+
+
+        self.aside_right_imgs = [0, 0]
+        self.aside_right_imgs[0] = pygame.transform.scale(
+            pygame.image.load("graphics/owl/aside1_23-31.png").convert_alpha(), (23 * ratio, 31 * ratio))
+        self.aside_right_imgs[1] = pygame.transform.scale(
+            pygame.image.load("graphics/owl/aside2_23-31.png").convert_alpha(), (23 * ratio, 31 * ratio))
+        self.aside_left_imgs = [0, 0]
+        self.aside_left_imgs[0] = pygame.transform.flip(self.aside_right_imgs[0], True, False)
+        self.aside_left_imgs[1] = pygame.transform.flip(self.aside_right_imgs[1], True, False)
+
+        self.walk_imgs = [0, 0]
+        self.walk_imgs[0] = pygame.transform.scale(pygame.image.load("graphics/owl/walk1_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+        self.walk_imgs[1] = pygame.transform.scale(pygame.image.load("graphics/owl/walk2_23-31.png").convert_alpha(),
+                                                   (23 * ratio, 31 * ratio))
+
+
 
     def jumping(self):
         # if space is pressed
@@ -128,6 +146,8 @@ class Player(pygame.sprite.Sprite):
     def moving_collision(self):
         # finding if the player can move in each direction based on the collisions
         self.can_moove = {'up':True, 'down':True, 'left':True, 'right': True}
+        self.index_map_down = 0
+        i=0
 
         for collide_map in self.collide_list:
             # if we are over the map item
@@ -137,6 +157,7 @@ class Player(pygame.sprite.Sprite):
                     self.destroy()
                 self.rect.bottom = collide_map.get_height() + 1
                 self.can_moove['down'] = False
+                self.index_map_down = i
             # if the element is over
             elif self.rect.bottom >= collide_map.get_bottom() - 10 and not( self.rect.right < collide_map.get_left() +5 or self.rect.left > collide_map.get_right() - 5):
                 self.can_moove['up'] = False
@@ -147,6 +168,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.can_moove['left'] = False
                 self.rect.left = collide_map.get_right() - 1
+            i+=1
 
     def pressed_input(self):
         keys = pygame.key.get_pressed()
@@ -174,22 +196,32 @@ class Player(pygame.sprite.Sprite):
         # if no collision
         if not self.collide_list:
             if self.gravity<0:
-                self.jump_img_i += 2
-                if self.jump_img_i == 20:
-                    self.jump_img_i =0
-                self.image = self.jump_imgs[self.jump_img_i//10]
+                self.anim_index += 2
+                if self.anim_index >= 20:
+                    self.anim_index =0
+                self.image = self.jump_imgs[self.anim_index // 10]
             else:
                 self.image = self.jump_imgs[0]
         else:
             if self.in_walk:
-                self.walk_i += 1
-                if self.walk_i == 20:
-                    self.walk_i = 0
-                self.image = self.walk_imgs[self.walk_i // 10]
+                self.anim_index += 1
+                if self.anim_index >= 20:
+                    self.anim_index = 0
+                self.image = self.walk_imgs[self.anim_index // 10]
             elif not self.can_moove['right']:
                 self.image = self.wall_right_img
             elif not self.can_moove['left']:
                 self.image = self.wall_left_img
+            elif not self.can_moove['down'] and (self.collide_list[self.index_map_down].get_right() < self.rect.centerx  or self.collide_list[self.index_map_down].get_left() > self.rect.centerx):
+                # moving index for animation
+                self.anim_index += 2
+                if self.anim_index >= 20:
+                    self.anim_index = 0
+                # animating aside of a platform
+                if self.collide_list[self.index_map_down].get_right() < self.rect.centerx:
+                    self.image = self.aside_right_imgs[self.anim_index // 10]
+                else:
+                    self.image = self.aside_left_imgs[self.anim_index // 10]
             else:
                 self.image = self.stand_img
 
