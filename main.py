@@ -11,35 +11,31 @@ screen = pygame.display.set_mode((1100,600))
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 
-# (GAMES STATES: -1: menu;   0: game over;    1: game active)
-game_state = -1
+# (GAMES STATES: -2: init; -1: menu;   0: game over;    1: game active)
+game_state = -2
 
-# importing fonts
-mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 130)
-
-# creating text surfaces
-# for the title
-title_surf = functions.render("MarHess", mario_text_font, 'red', 'white', 6) # render an outlined text
-title_rect = title_surf.get_rect(center=(550,150))
-# for the game over
-game_over_text = functions.render("Game Over", mario_text_font, 'white', 'black', 6) # render an outlined text
-text_dim = game_over_text.get_rect(center = (1100 // 2, 600 // 2))  # create a centered rectangle
+# text for the title
+title_text = functions.title_text()
+# text for the game over
+game_over_text = functions.gameOver_text()
 
 # player initialization
 player = pygame.sprite.GroupSingle()
 
-# moving map
+# moving map, this coordinate will synchronize every element on the same shift
 x_map = 0
 
-# chose of level and level already finished (achieved_level[0] is intro)
-level = 3
+level = 0 # choosing the intro level and importing what's needed for this one
+map_group, enemy_group, background_group, end_point = levels.import_level(level)
+# level already finished (achieved_level[0] is intro)
 achieved_level = [0,0,0,0]
 
+# importing the sky image
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
 while True:
     # events loop
-    keych = 0
+    keych = 0 # 2 if c and h are pressed -> cheat mode
     for event in pygame.event.get():
         # close window when asked
         if event.type == pygame.QUIT:
@@ -52,16 +48,16 @@ while True:
                     pygame.quit()
                     exit()
                 if event.key == pygame.K_c:
-                    keych +=1
+                    keych +=1 # if c is pressed
                 if event.key == pygame.K_h:
-                    keych+=1
+                    keych+=1 # if h pressed
                 if keych ==2:
-                    player.sprite.cheat()
+                    player.sprite.cheat() # consequently if c and h are pressed
 
         # else if space is pressed, actions to start a new party
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN or game_state==-2:
             # if space key is pressed
-            if event.key == pygame.K_SPACE:
+            if game_state==-2 or event.key == pygame.K_SPACE:
                 # adding a player object in the player group
                 player.add(sprites.Player())
                 # creating groups based on the level asked
@@ -122,14 +118,14 @@ while True:
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
-        screen.blit(game_over_text, text_dim)
+        game_over_text.draw(screen)
 
 
     # actions if we are in the menu
     elif game_state == -1:
         pygame.mouse.set_visible(True)
         screen.fill('#3498db') # blue background
-        screen.blit(title_surf, title_rect) # title
+        title_text.draw(screen)
 
 
     # update the screen and set 60 frame per seconds

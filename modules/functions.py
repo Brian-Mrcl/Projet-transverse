@@ -3,6 +3,7 @@ import pygame
 
 # the goal of those two functions is to outine the text, we used it for the game over text
 # it comes from https://stackoverflow.com/questions/54363047/how-to-draw-outline-on-the-fontpygame
+# it's for aestetic use
 _circle_cache = {}
 def _circlepoints(r):
     r = int(round(r))
@@ -41,3 +42,34 @@ def render(text, font, gfcolor=pygame.Color('dodgerblue'), ocolor=(255, 255, 255
 
     surf.blit(textsurface, (opx, opx))
     return surf
+
+
+# the rest of the code is made by us
+
+# importing font
+pygame.font.init()
+mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 130)
+
+
+class Text(pygame.sprite.Sprite):
+    def __init__(self, utilitie):
+        pygame.sprite.Sprite.__init__(self)
+        if utilitie == 'title':
+            self.image = render("MarHess", mario_text_font, 'red', 'white', 6) # render an outlined text
+            self.rect = self.image.get_rect(center=(550,150))
+        elif utilitie == 'over':
+            # for the game over
+            self.image = render("Game Over", mario_text_font, 'white', 'black', 6) # render an outlined text
+            self.rect = self.image.get_rect(center = (1100 // 2, 600 // 2))  # create a centered rectangle
+
+def title_text():
+    title_text = Text('title')
+    group = pygame.sprite.GroupSingle()
+    group.add(title_text)
+    return group
+
+def gameOver_text():
+    title_text = Text('over')
+    group = pygame.sprite.GroupSingle()
+    group.add(title_text)
+    return group
