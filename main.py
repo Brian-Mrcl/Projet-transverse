@@ -15,11 +15,15 @@ clock = pygame.time.Clock()
 game_state = -1
 
 # importing fonts
-mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 100)
+mario_text_font = pygame.font.Font('font/SuperMario256.ttf', 130)
 
 # creating text surfaces
-title_surf = mario_text_font.render("MarHess", True, 'Red')
-title_rect = title_surf.get_rect(center=(550,100))
+# for the title
+title_surf = functions.render("MarHess", mario_text_font, 'red', 'white', 6) # render an outlined text
+title_rect = title_surf.get_rect(center=(550,150))
+# for the game over
+game_over_text = functions.render("Game Over", mario_text_font, 'white', 'black', 6) # render an outlined text
+text_dim = game_over_text.get_rect(center = (1100 // 2, 600 // 2))  # create a centered rectangle
 
 # player initialization
 player = pygame.sprite.GroupSingle()
@@ -28,7 +32,7 @@ player = pygame.sprite.GroupSingle()
 x_map = 0
 
 # chose of level and level already finished (achieved_level[0] is intro)
-level = 0
+level = 3
 achieved_level = [0,0,0,0]
 
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
@@ -56,15 +60,15 @@ while True:
 
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN:
+            # if space key is pressed
             if event.key == pygame.K_SPACE:
+                # adding a player object in the player group
                 player.add(sprites.Player())
-                if level == 0:
-                    map_group, enemy_group, background_group, end_point = levels.intro()
-                elif level == 1:
-                    map_group, enemy_group, background_group, end_point = levels.level1()
-                elif level == 2:
-                    map_group, enemy_group, background_group, end_point = levels.level2()
+                # creating groups based on the level asked
+                map_group, enemy_group, background_group, end_point = levels.import_level(level)
+                # puting game state to game active
                 game_state = 1
+            # if escape key is pressed close the game
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 exit()
@@ -118,19 +122,14 @@ while True:
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
-        font = pygame.font.Font('font/SuperMario256.ttf', 150)  # the police chracter for the word game over
-        game_over_text = font.render("Game Over", True, (255,0,0))
-
-        text_dim = game_over_text.get_rect()  # dimension of the text
-        text_dim.center = (1100 // 2, 600 // 2)  # center of the image going modifying text_dim
         screen.blit(game_over_text, text_dim)
 
 
     # actions if we are in the menu
     elif game_state == -1:
         pygame.mouse.set_visible(True)
-        screen.fill((94, 129, 162))
-        screen.blit(title_surf, title_rect)
+        screen.fill('#3498db') # blue background
+        screen.blit(title_surf, title_rect) # title
 
 
     # update the screen and set 60 frame per seconds
