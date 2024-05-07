@@ -10,7 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
-game_state = 0
+game_state = -1
 # (GAMES STATES: -1: menu;   0: game over;    1: game active)
 
 # importing font
@@ -97,16 +97,16 @@ while True:
     # actions if we are in the menu
     elif game_state == -1:
         screen.fill('Dark grey')
-        button_group.draw(screen)
-        button_group.update(x_map)
-        for event in pygame.event.get():
-            # close window when asked
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and button_group.typeB == "Start" and button_group.colliderect(
-                    pygame.MOUSEMOTION):
-                game_state = 0
+        output = None
+        for button in button_group:
+            if output == None:
+                output = button.update(screen)
+        player.add(sprites.Player())
+        if output!=None:
+            if level == 1:
+                map_group, enemy_group = levels.level1()
+            game_state = 1
+
 
     # update the screen and set 60 frame per seconds
     pygame.display.update()

@@ -14,19 +14,37 @@ def Menu():
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, typeB: str, begin_coord, end_coord, y, height, color):
+    def __init__(self, display_txt: str, x, y, height, width, bg_color='green', text_color='red'):
         super().__init__()
-        self.typeB = typeB
-        self.begin = begin_coord
-        self.end = end_coord
+        self.display_txt = display_txt
+
+        self.x = x
         self.y = y
+        self.width = width
         self.height = height
-        self.color = color
-        font = pygame.font.Font('font/SuperMario256.ttf', 40)
-        self.font = font.render(typeB, False, 'red')
-        text_dim = self.font.get_rect()
-        text_dim.center = (1100 // 2, 600 // 2)
-        self.txt = pygame.Surface((self.end - self.begin), self.height)
-        self.image = pygame.Surface((self.end - self.begin, self.height))
-        self.image.fill(color)
-        self.rect = self.image.get_rect(bottomleft=(self.begin, self.y))
+
+        self.bg_color = bg_color
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.bg_color)
+        self.rect = self.image.get_rect(center=(x, y))
+
+        self.font = pygame.font.Font('font/SuperMario256.ttf', 40)
+        self.text_surface = self.font.render(display_txt, True, text_color)
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+
+    def update(self, screen):
+        # Draw the background rectangle
+        screen.blit( self.image, self.rect)
+
+        # Draw the text on top of the background rectangle
+        screen.blit(self.text_surface, self.text_rect)
+        if self.rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            match self.display_txt:
+                case 'Intro':
+                    return 0
+                case 'Level 1':
+                    return 1
+                case 'Level 2':
+                    return 2
+                case 'Level 3':
+                    return 3
