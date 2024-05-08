@@ -31,6 +31,7 @@ level = 1
 sky_surface = pygame.image.load('graphics/sky.png').convert()
 
 # menu
+button_group = pygame.sprite.Group()
 button_group = menu.Menu()
 
 while True:
