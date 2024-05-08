@@ -4,10 +4,11 @@ from sys import exit
 from modules import sprites
 from modules import levels
 from modules import functions
+from modules import menu
 
 # initialization
 pygame.init()
-screen = pygame.display.set_mode((1100,600))
+screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 
@@ -33,6 +34,9 @@ achieved_level = [0,0,0,0]
 # importing the sky image
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
+# menu
+button_group = menu.Menu()
+
 while True:
     # events loop
     keych = 0 # 2 if c and h are pressed -> cheat mode
@@ -41,6 +45,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
         #actions if a party is playing, for timers
         if game_state == 1:
             if event.type == pygame.KEYDOWN:
@@ -53,7 +58,6 @@ while True:
                     keych+=1 # if h pressed
                 if keych ==2:
                     player.sprite.cheat() # consequently if c and h are pressed
-
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN or game_state==-2:
             # if space key is pressed
@@ -74,7 +78,7 @@ while True:
         #pygame.mouse.set_visible(False)
 
         # Putting the sky
-        screen.blit(sky_surface, (0,0))
+        screen.blit(sky_surface, (0, 0))
 
         # Background
         background_group.draw(screen)
@@ -100,8 +104,8 @@ while True:
         # updating the collisions of the player with enemys, return if he died
         enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
         if game_state == 1:
-            game_state = player.sprite.colliding_enemy(enemy_collide)
 
+            game_state = player.sprite.colliding_enemy(enemy_collide)
 
         if game_state != 1:
             player.sprite.kill()
@@ -115,7 +119,6 @@ while True:
             game_state = -1
             level+=1
 
-
     elif game_state == 0:
         pygame.mouse.set_visible(True)
         game_over_text.draw(screen)
@@ -126,6 +129,16 @@ while True:
         pygame.mouse.set_visible(True)
         screen.fill('#3498db') # blue background
         title_text.draw(screen)
+        output = None
+        for button in button_group:
+            if output == None:
+                output = button.update(screen)
+        player.add(sprites.Player())
+        if output!=None:
+            if level == 1:
+                map_group, enemy_group = levels.level1()
+            game_state = 1
+
 
 
     # update the screen and set 60 frame per seconds

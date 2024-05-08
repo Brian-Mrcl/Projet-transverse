@@ -427,12 +427,3 @@ class End_point(pygame.sprite.Sprite):
         self.animation()
 
 
-class Button(pygame.sprite.Sprite):
-    def __init__(self, text, height, width):
-        super().__init__()
-        self.text = text
-        self.height = height
-        self.width = width
-
-    def get_bottom(self):
-        return self.rect.bottom
