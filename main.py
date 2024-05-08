@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
 pygame.display.set_caption("MarHess")
 clock = pygame.time.Clock()
 
-# (GAMES STATES: -2: init; -1: menu;   0: game over;    1: game active)
+# (GAMES STATES: -2: init/intro; -1: menu;   0: game over;    1: game active)
 game_state = -2
 
 # text for the title
@@ -59,7 +59,13 @@ while True:
                 if keych ==2:
                     player.sprite.cheat() # consequently if c and h are pressed
         # else if space is pressed, actions to start a new party
-        elif event.type == pygame.KEYDOWN or game_state==-2:
+        elif event.type == pygame.KEYDOWN or game_state == -2:
+            # presentation screen
+            if game_state==-2:
+                screen.fill('#3498db')
+                title_text.draw(screen)
+                pygame.display.update()
+                pygame.time.wait(1500)
             # if space key is pressed
             if game_state==-2 or event.key == pygame.K_SPACE:
                 # adding a player object in the player group
@@ -130,13 +136,18 @@ while True:
         screen.fill('#3498db') # blue background
         title_text.draw(screen)
         output = None
+        # updating the buttons and taking their outputs
         for button in button_group:
-            if output == None:
+            if output == None or achieved_level[output-1] == 0:
                 output = button.update(screen)
-        player.add(sprites.Player())
-        if output!=None:
-            if level == 1:
-                map_group, enemy_group = levels.level1()
+        # if a button is clicked, the output will be the level wanted by the player if the previous level is done
+        if output!=None and achieved_level[output-1] == 1:
+            level = output
+            # adding a player object in the player group
+            player.add(sprites.Player())
+            # creating groups based on the level asked
+            map_group, enemy_group, background_group, end_point = levels.import_level(level)
+            # puting game state to game active
             game_state = 1
 
 
