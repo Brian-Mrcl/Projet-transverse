@@ -6,6 +6,7 @@ from modules import levels
 from modules import functions
 from modules import menu
 from modules import playerClass
+from modules import bullet
 
 # initialization
 pygame.init()
@@ -23,6 +24,7 @@ game_over_text = functions.gameOver_text()
 
 # player initialization
 player = pygame.sprite.GroupSingle()
+bullets_group = pygame.sprite.Group()
 
 # moving map, this coordinate will synchronize every element on the same shift
 x_map = 0
@@ -59,6 +61,13 @@ while True:
                     keych+=1 # if h pressed
                 if keych ==2:
                     player.sprite.cheat() # consequently if c and h are pressed
+            # if the mouse is pressed
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # a mouse button is pressed
+                if event.button == 1:
+                    # it's the left one, we lunch a bullet !!
+                    bullets_group.add(bullet.Bullet(player.sprite, x_map))
+
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN or game_state == -2:
             # presentation screen
@@ -66,7 +75,7 @@ while True:
                 screen.fill('#3498db')
                 title_text.draw(screen)
                 pygame.display.update()
-                pygame.time.wait(1500)
+                pygame.time.wait(500)
             # if space key is pressed
             if game_state==-2 or event.key == pygame.K_SPACE:
                 # adding a player object in the player group
@@ -111,7 +120,6 @@ while True:
         # updating the collisions of the player with enemys, return if he died
         enemy_collide = pygame.sprite.spritecollide(player.sprite, enemy_group, False)
         if game_state == 1:
-
             game_state = player.sprite.colliding_enemy(enemy_collide)
 
         if game_state != 1:
@@ -125,6 +133,10 @@ while True:
             achieved_level[level] = 1
             game_state = -1
             level+=1
+
+        #bullets
+        bullets_group.update(x_map)
+        bullets_group.draw(screen)
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
@@ -154,5 +166,5 @@ while True:
 
 
     # update the screen and set 60 frame per seconds
-    pygame.display.update()
+    pygame.display.flip()
     clock.tick(60)
