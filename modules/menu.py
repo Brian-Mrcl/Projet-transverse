@@ -5,17 +5,8 @@ LENGTH = 600
 
 def Menu():
     button_group = pygame.sprite.Group()
-    button_group.add(Button("Intro", WIDTH // 2, 200, 50, 200))
-    button_group.add(Button("Level 1", WIDTH//2, 300, 50, 200))
-    button_group.add(Button("Level 2", WIDTH // 2, 400, 50, 200))
-    button_group.add(Button("Level 3", WIDTH // 2, 500, 50, 200))
-    '''
-    button_group.add(Button("Start", 475, 625, 300, 70, 'red'))
-    button_group.add(Button("Start", 475, 625, 400, 70, 'green'))
-    button_group.add(Button("Start", 475, 625, 500, 70, 'purple'))
-    '''
     width, height = 250, 70
-    center = 1100 // 2
+    center = WIDTH // 2
     button_group.add(Button("Tutorial", center, 250, width, height))
     button_group.add(Button("Level 1", center, 350, width, height))
     button_group.add(Button("Level 2", center, 450, width, height))
