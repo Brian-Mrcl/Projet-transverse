@@ -1,10 +1,11 @@
 import pygame
 from sys import exit
 
-from modules import sprites
+from modules import mapAndEnemies
 from modules import levels
 from modules import functions
 from modules import menu
+from modules import playerClass
 
 # initialization
 pygame.init()
@@ -69,7 +70,7 @@ while True:
             # if space key is pressed
             if game_state==-2 or event.key == pygame.K_SPACE:
                 # adding a player object in the player group
-                player.add(sprites.Player())
+                player.add(playerClass.Player())
                 # creating groups based on the level asked
                 map_group, enemy_group, background_group, end_point = levels.import_level(level)
                 # puting game state to game active
@@ -144,7 +145,7 @@ while True:
         if output!=None and achieved_level[output-1] == 1:
             level = output
             # adding a player object in the player group
-            player.add(sprites.Player())
+            player.add(playerClass.Player())
             # creating groups based on the level asked
             map_group, enemy_group, background_group, end_point = levels.import_level(level)
             # puting game state to game active
