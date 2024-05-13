@@ -12,16 +12,32 @@ def calculate_bullets_position(angle_rad, vitesse_initiale, temps, gravite=-9.81
     return x, y
 
 class Bullet(pygame.sprite.Sprite) :
-    def __init__(self, player, shift_map):     #on a récupéré le player grâce au self dans la classe player sur prjectiles
+    def __init__(self, player, shift_map, u, theta):     #on a récupéré le player grâce au self dans la classe player sur prjectiles
         super().__init__() #super class
         self.velocity = 5
-        self.player = player
         self.image = pygame.image.load("graphics/projectile.png")
         self.image = pygame.transform.scale(self.image, (50, 50)) #changer la taille du projectile
         self.rect = self.image.get_rect() # avoir les coordonnées du projectile
         self.rect.y = player.rect.y + 20
         self.origin_image = self.image  # car quand il tourne on va modifier l'image
         self.angle = 0 # l'angle pour faire tourner le projectile
+
+
+        ## NEW ##
+        self.u = u
+        self.theta = functions.toRadian(abs(theta))
+        self.origin = [player.rect.x - shift_map, player.rect.y]
+        self.x, self.y = self.origin[0], self.origin[1]
+
+        self.ch = 0
+        self.dx = 2
+
+        self.f = self.getTrajectory()
+        self.range = self.x + abs(self.getRange())
+
+        self.path = []
+
+
 
 
     def rotate(self):

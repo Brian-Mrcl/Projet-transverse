@@ -8,6 +8,16 @@ from modules import menu
 from modules import playerClass
 from modules import bullet
 
+WIDTH, HEIGHT = 1100, 600
+
+## for trajectory
+
+theta = -30
+end = functions.getPosOnCircumeference(theta, (WIDTH, HEIGHT))
+arct = functions.toRadian(theta)
+arcrect = pygame.Rect(WIDTH//2 - 30, HEIGHT//2 - 30, 60, 60)
+
+
 # initialization
 pygame.init()
 screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
@@ -67,7 +77,15 @@ while True:
                 # a mouse button is pressed
                 if event.button == 1:
                     # it's the left one, we lunch a bullet !!
-                    bullets_group.add(bullet.Bullet(player.sprite, x_map))
+                    u = 50
+                    theta = -30
+                    pos = event.pos
+                    theta = functions.getAngle(pos, player.sprite.rect)
+                    if -90 < theta <= 0:
+                        a_bullet = bullet.Bullet(u, theta)
+                        bullets_group.add(a_bullet)
+                        currentp = a_bullet
+
 
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN or game_state == -2:
