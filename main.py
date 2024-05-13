@@ -169,4 +169,3 @@ while True:
     # update the screen and set 60 frame per seconds
     pygame.display.flip()
     clock.tick(60)
-

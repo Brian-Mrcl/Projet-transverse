@@ -1,4 +1,9 @@
 import pygame
+import math
+from modules import functions
+
+u = 50
+g = 9.8
 
 
 def calculate_bullets_position(angle_rad, vitesse_initiale, temps, gravite=-9.81):
@@ -14,7 +19,6 @@ class Bullet(pygame.sprite.Sprite) :
         self.image = pygame.image.load("graphics/projectile.png")
         self.image = pygame.transform.scale(self.image, (50, 50)) #changer la taille du projectile
         self.rect = self.image.get_rect() # avoir les coordonnées du projectile
-        self.position = player.rect.x + 20+shift_map
         self.rect.y = player.rect.y + 20
         self.origin_image = self.image  # car quand il tourne on va modifier l'image
         self.angle = 0 # l'angle pour faire tourner le projectile
@@ -27,21 +31,52 @@ class Bullet(pygame.sprite.Sprite) :
         self.rect = self.image.get_rect(center=self.rect.center) # une rotation par rapport au centre car sinon sautillment car tout les spites sont représenté avec un rectangle
 
     def update(self, shift_map):
-        self.position += self.velocity
-        # thanks to shift_map the bullet move also when the player move
-        self.rect.x = self.position - shift_map
-        self.rotate()
+        # Mettre à jour les coordonnées du projectile
+        self.rect.x = self.x - shift_map
+        self.rect.y = self.y
 
-        # J'AI MIS CA EN COMMENTAIRE
+        # # Condition pour supprimer le projectile s'il est en dehors de l'écran
+        # if self.rect.x > 1080:
+        #     self.kill()
 
-        # #verifier si projectile est en collision avec un monstre
-        # for monster in self.player.game.check_collision(self, self.player.game.all_monsters) :
-        #     self.remove()
-        #     #infliger des degats
-        #     monster.damage(self.player.attack)
+        #if self.rect.y > 600:  # Taille de l'écran en y
+            #self.kill()
 
 
+    ##### NEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWWW #####
+        if self.x >= self.range:
+            self.dx = 0
+        self.x += self.dx
+        self.ch = self.getProjectilePos(self.x - self.origin[0])
 
-        #condition pour supp le prjectile si il est en dehors de l'ecran
-        if self.rect.x > 1080 :
-            self.kill()
+        self.path.append((self.x, self.y - abs(self.ch)))
+        self.path = self.path[-50:]
+
+        self.x,self.y = self.path[-1]
+
+    def timeOfFlight(self):
+        return round((2 * self.u * math.sin(self.theta)) / g, 2)
+
+    def getRange(self):
+        range_ = ((self.u ** 2) * 2 * math.sin(self.theta) * math.cos(self.theta)) / g
+        return round(range_, 2)
+
+    def getMaxHeight(self):
+        h = ((self.u ** 2) * (math.sin(self.theta)) ** 2) / (2 * g)
+        return round(h, 2)
+
+    def getTrajectory(self):
+        return round(g / (2 * (self.u ** 2) * (math.cos(self.theta) ** 2)), 4)
+
+    def getProjectilePos(self, x):
+        return x * math.tan(self.theta) - self.f * x ** 2
+
+
+
+
+
+
+
+
+
+
