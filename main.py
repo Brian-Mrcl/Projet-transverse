@@ -8,16 +8,6 @@ from modules import menu
 from modules import playerClass
 from modules import bullet
 
-WIDTH, HEIGHT = 1100, 600
-
-## for trajectory
-
-theta = -30
-end = functions.getPosOnCircumeference(theta, (WIDTH, HEIGHT))
-arct = functions.toRadian(theta)
-arcrect = pygame.Rect(WIDTH//2 - 30, HEIGHT//2 - 30, 60, 60)
-
-
 # initialization
 pygame.init()
 screen = pygame.display.set_mode((1100, 600), flags=pygame.RESIZABLE)
@@ -34,7 +24,6 @@ game_over_text = functions.gameOver_text()
 
 # player initialization
 player = pygame.sprite.GroupSingle()
-bullets_group = pygame.sprite.Group()
 
 # moving map, this coordinate will synchronize every element on the same shift
 x_map = 0
@@ -48,8 +37,10 @@ achieved_level = [0,0,0,0]
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
 # menu
-button_group = pygame.sprite.Group()
 button_group = menu.Menu()
+
+
+
 
 while True:
     # events loop
@@ -59,7 +50,6 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
         #actions if a party is playing, for timers
         if game_state == 1:
             if event.type == pygame.KEYDOWN:
@@ -77,16 +67,12 @@ while True:
                 # a mouse button is pressed
                 if event.button == 1:
                     # it's the left one, we lunch a bullet !!
-                    u = 50
-                    theta = -30
+                    # bullets_group.add(bullet.Bullet(player.sprite, x_map))
                     pos = event.pos
-                    theta = functions.getAngle(pos, player.sprite.rect)
+                    theta = bullet.getAngle(pos, player.sprite.rect.center)
                     if -90 < theta <= 0:
-                        a_bullet = bullet.Bullet(u, theta)
-                        bullets_group.add(a_bullet)
-                        currentp = a_bullet
-
-
+                        projectile = bullet.Bullet(u, theta, screen, player.sprite, x_map)
+                        bullet_group.add(projectile)
         # else if space is pressed, actions to start a new party
         elif event.type == pygame.KEYDOWN or game_state == -2:
             # presentation screen
@@ -103,6 +89,13 @@ while True:
                 map_group, enemy_group, background_group, end_point = levels.import_level(level)
                 # puting game state to game active
                 game_state = 1
+                # initialization of physic and bullet
+                radius = 250
+                u = 50
+                g = 9.8
+                bullet_group = pygame.sprite.Group()
+                theta = -30
+                end = bullet.getPosOnCircumeference(theta, player.sprite.rect.center)
             # if escape key is pressed close the game
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -154,8 +147,10 @@ while True:
             level+=1
 
         #bullets
-        bullets_group.update(x_map)
-        bullets_group.draw(screen)
+        bullet_group.update(x_map)
+
+
+
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
@@ -187,3 +182,4 @@ while True:
     # update the screen and set 60 frame per seconds
     pygame.display.flip()
     clock.tick(60)
+

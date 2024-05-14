@@ -1,6 +1,5 @@
-# file assisting the main.py file for text and trajectory
+# file assisting the main.py file
 import pygame
-import math
 
 # the goal of those two functions is to outine the text, we used it for the game over text
 # it comes from https://stackoverflow.com/questions/54363047/how-to-draw-outline-on-the-fontpygame
@@ -74,34 +73,3 @@ def gameOver_text():
     group = pygame.sprite.GroupSingle()
     group.add(title_text)
     return group
-
-
-radius = 160
-
-def toRadian(theta):
-    return theta * math.pi / 180
-
-def toDegrees(theta):
-    return theta * 180 / math.pi
-
-def getGradient(p1, p2):
-    if p1[0] == p2[0]:
-        m = toRadian(90)
-    else:
-        m = (p2[1] - p1[1]) / (p2[0] - p1[0])
-    return m
-
-def getAngleFromGradient(gradient):
-    return math.atan(gradient)
-
-def getAngle(pos, origin):
-    m = getGradient(pos, origin)
-    thetaRad = getAngleFromGradient(m)
-    theta = round(toDegrees(thetaRad), 2)
-    return theta
-
-def getPosOnCircumeference(theta, origin):
-    theta = toRadian(theta)
-    x = origin[0] + radius * math.cos(theta)
-    y = origin[1] + radius * math.sin(theta)
-    return (x, y)
