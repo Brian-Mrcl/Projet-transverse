@@ -87,12 +87,15 @@ class Bullet(pygame.sprite.Sprite):
             center=self.rect.center)  # une rotation par rapport au centre car sinon sautillment car tout les spites sont représenté avec un rectangle
 
     def update(self, map_shift):
-        if self.x >= self.range:
-            self.dx = 0
+
+        #To stop the projectle before x = 0
+        #if self.x >= self.range:
+            #self.dx = 0
         self.x += self.dx
         self.ch = self.getProjectilePos(self.x - self.origin[0])
 
-        self.path.append((self.x, self.y - abs(self.ch)))
+        #self.path.append((self.x, self.y - abs(self.ch)))
+        self.path.append((self.x, self.y - self.ch))
         self.path = self.path[-50:]
 
         # display the stonne
@@ -105,3 +108,6 @@ class Bullet(pygame.sprite.Sprite):
         for pos in self.path[:-1:5]:
             x_display = pos[0] + self.map_origin - map_shift
             pygame.draw.circle(self.win, 'white', (x_display, pos[1]), 1)
+
+        if self.rect.top > 600 or self.rect.left > 1100 or self.rect.right < 0: #delete projectiles outside the screen area
+            self.kill()

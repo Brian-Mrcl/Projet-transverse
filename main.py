@@ -149,8 +149,8 @@ while True:
         #bullets
         bullet_group.update(x_map)
 
-
-
+        #Detection of colision between two ennemies and diseapear both if it's True
+        pygame.sprite.groupcollide(bullet_group, enemy_group, True, True)
 
     elif game_state == 0:
         pygame.mouse.set_visible(True)
