@@ -1,10 +1,12 @@
 import pygame
+from modules import mapAndEnemies as me
 
 WIDTH = 1100
 LENGTH = 600
 
 def Menu():
     button_group = pygame.sprite.Group()
+    deco_group = pygame.sprite.Group()
     width, height = 250, 70
     center = WIDTH // 2
     button_group.add(Button("Tutorial", center, 250, width, height))
@@ -12,11 +14,14 @@ def Menu():
     button_group.add(Button("Level 2", center, 450, width, height))
     button_group.add(Button("Level 3", center, 550, width, height))
 
-    return button_group
+    deco_group.add(me.Decoration( 150, 'owl_pres', 350))
+    deco_group.add(me.Decoration(800, 'ordi', 290))
+    deco_group.add(me.Decoration(50, 'endPoint', 50))
+    return button_group, deco_group
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, display_txt: str, x, y, width, height, bg_color='green', text_color='red'):
+    def __init__(self, display_txt: str, x, y, width, height, text_color='red'):
         super().__init__()
         self.display_txt = display_txt
 
@@ -25,10 +30,10 @@ class Button(pygame.sprite.Sprite):
         self.width = width
         self.height = height
 
-        self.bg_color = bg_color
-        self.image = pygame.Surface((self.width, self.height))
-        self.image.fill(self.bg_color)
+        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=(x, y))
+
+        pygame.draw.rect(self.image, (255, 255, 255), (0, 0, width, height), border_radius=25)
 
         self.font = pygame.font.Font('font/SuperMario256.ttf', 40)
         self.text_surface = self.font.render(display_txt, True, text_color)
@@ -36,7 +41,7 @@ class Button(pygame.sprite.Sprite):
 
     def update(self, screen):
         # Draw the background rectangle
-        screen.blit( self.image, self.rect)
+        screen.blit(self.image, self.rect)
 
         # Draw the text on top of the background rectangle
         screen.blit(self.text_surface, self.text_rect)

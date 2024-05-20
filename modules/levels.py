@@ -151,7 +151,6 @@ def level2(level):
 
     return map_group, enemy_group, background_group, end_point
 
-
 def level3(level):
     background_group = pygame.sprite.Group()
 
@@ -165,13 +164,51 @@ def level3(level):
     map_group = pygame.sprite.Group()
 
     # placing everything
+    # beginning
     map_group.add(mapAndEnemies.Map(100, 400))
     map_group.add(mapAndEnemies.Map(500, 1500))
-
-    enemy_group.add(mapAndEnemies.Enemy(100, 300, big,level,400))
+    map_group.add(mapAndEnemies.Map(1675, 1900, 300, 300))
+    # bloc dans le ciel
+    map_group.add(mapAndEnemies.Map(1550, 1800, 50, 100))
+    # enemies
+    enemy_group.add(mapAndEnemies.Enemy(100, 300, big, level, 400))
     enemy_group.add(mapAndEnemies.Enemy(800, 1200, small, level, 400))
     enemy_group.add(mapAndEnemies.Enemy(1200, 1600, fly, level, 300))
+    enemy_group.add(mapAndEnemies.Enemy(700, 1100, fly, level, 250))
 
-    end_point.add(mapAndEnemies.End_point(1600, 350))
+    # pillars part
+    map_group.add(mapAndEnemies.Map(2080, 2085, 350))
+    map_group.add(mapAndEnemies.Map(2275, 2280, 320))
+    map_group.add(mapAndEnemies.Map(2450, 2455, 290))
+    map_group.add(mapAndEnemies.Map(2650, 2655, 450))
+
+    # 2 different way
+    map_group.add(mapAndEnemies.Map(2800, 4000, 230, 170))
+        # down part
+    map_group.add(mapAndEnemies.Map(2800, 3500, 590))
+    map_group.add(mapAndEnemies.Map(3200, 3300, 540))
+    map_group.add(mapAndEnemies.Map(3400, 3500, 530))
+    map_group.add(mapAndEnemies.Map(3600, 3700, 540))
+    map_group.add(mapAndEnemies.Map(3820, 3970, 530))
+
+    enemy_group.add(mapAndEnemies.Enemy(2850, 2950, big, level, 590))
+    enemy_group.add(mapAndEnemies.Enemy(3050, 3150, big, level, 590))
+    enemy_group.add(mapAndEnemies.Enemy(3300, 3400, small, level, 590))
+    enemy_group.add(mapAndEnemies.Enemy(3500, 3600, fly, level, 590))
+
+        # up part
+    map_group.add(mapAndEnemies.Map(2800, 4000, 0, 130))
+
+    enemy_group.add(mapAndEnemies.Enemy(2840, 2900, small, level, 230))
+    enemy_group.add(mapAndEnemies.Enemy(2930, 3000, small, level, 230))
+
+    # final
+    map_group.add(mapAndEnemies.Map(4060, 4550, 500, 20))
+
+    enemy_group.add(mapAndEnemies.Enemy(4640, 4780, fly, level, 450))
+    enemy_group.add(mapAndEnemies.Enemy(4840, 4980, fly, level, 400))
+    enemy_group.add(mapAndEnemies.Enemy(5060, 5180, fly, level, 350))
+
+    end_point.add(mapAndEnemies.End_point(5200, 300))
 
     return map_group, enemy_group, background_group, end_point

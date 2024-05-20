@@ -34,12 +34,20 @@ class Decoration(pygame.sprite.Sprite):
         self.height = height
         self.begin = begin
         self.flow_end = flow_end
-        if type == 'mountain':
-            pass
-        elif type == 'tree':
-            pass
-        elif type == 'castle':
-            pass
+        if type == 'endPoint':
+            self.image = pygame.image.load("graphics/endPoint.png").convert_alpha()
+            self.image = pygame.transform.scale(self.image, (23 * 5, 31 * 5))
+            self.rect = self.image.get_rect(topleft=(begin, height))
+        elif type == 'ordi':
+            self.image = pygame.image.load("graphics/enemies/computer/computer-192_191.png").convert_alpha()
+            self.image = pygame.transform.scale(self.image, (192, 191))
+            self.image = pygame.transform.rotate(self.image, 30)
+            self.rect = self.image.get_rect(topleft=(begin, height))
+        elif type == 'owl_pres':
+            self.image = pygame.image.load("graphics/owl/standing_23-31.png").convert_alpha()
+            self.image = pygame.transform.scale(self.image, (23 * 7, 31 * 7))
+            self.rect = self.image.get_rect(topleft=(begin, height))
+
         elif type == 'tuto_display':
             self.image = pygame.image.load("graphics/tuto/tuto_display.png").convert_alpha()
             self.image = pygame.transform.rotozoom(self.image, 0, scale)

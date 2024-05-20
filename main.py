@@ -37,7 +37,7 @@ achieved_level = [0,0,0,0]
 sky_surface = pygame.transform.scale(pygame.image.load('graphics/sky.png').convert(), (1100, 600))
 
 # menu
-button_group = menu.Menu()
+button_group, deco_menu = menu.Menu()
 
 
 
@@ -156,11 +156,15 @@ while True:
         pygame.mouse.set_visible(True)
         game_over_text.draw(screen)
 
-
-    # actions if we are in the menu
     elif game_state == -1:
         pygame.mouse.set_visible(True)
-        screen.fill('#3498db') # blue background
+        #screen.fill('#1A18B8')  # blue background
+        fond = pygame.image.load('graphics/MurBleuBon.jpeg').convert_alpha()
+        fond = pygame.transform.scale(fond, (1640*0.671, 1024*0.59  ))
+        fond = fond.convert()
+        screen.blit(fond, (0, 0))
+
+        deco_menu.draw(screen)
         title_text.draw(screen)
         output = None
         # updating the buttons and taking their outputs
@@ -168,13 +172,13 @@ while True:
             if output == None or achieved_level[output-1] == 0:
                 output = button.update(screen)
         # if a button is clicked, the output will be the level wanted by the player if the previous level is done
-        if output!=None and achieved_level[output-1] == 1:
+        if output != None and achieved_level[output-1] == 1:
             level = output
             # adding a player object in the player group
             player.add(playerClass.Player())
             # creating groups based on the level asked
             map_group, enemy_group, background_group, end_point = levels.import_level(level)
-            # puting game state to game active
+            # putting game state to game active
             game_state = 1
 
 
