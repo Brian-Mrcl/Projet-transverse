@@ -47,7 +47,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x, self.y = self.origin
 
         self.ch = 0
-        self.dx = 2
+        self.dx = 6
 
         self.f = self.getTrajectory()
         self.range = self.x + abs(self.getRange())
