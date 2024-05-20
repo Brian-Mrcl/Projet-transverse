@@ -69,7 +69,7 @@ while True:
                     # it's the left one, we lunch a bullet !!
                     # bullets_group.add(bullet.Bullet(player.sprite, x_map))
                     pos = event.pos
-                    theta = bullet.getAngle(pos, player.sprite.rect.center)
+                    theta = bullet.get_angle(pos, player.sprite.rect.center)
                     if -90 < theta <= 0:
                         projectile = bullet.Bullet(u, theta, screen, player.sprite, x_map)
                         bullet_group.add(projectile)
@@ -95,7 +95,7 @@ while True:
                 g = 9.8
                 bullet_group = pygame.sprite.Group()
                 theta = -30
-                end = bullet.getPosOnCircumeference(theta, player.sprite.rect.center)
+                end = bullet.get_posOnCircumeference(theta, player.sprite.rect.center)
             # if escape key is pressed close the game
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()

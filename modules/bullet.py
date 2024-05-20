@@ -5,30 +5,30 @@ import math
 g = 9.8
 radius = 160
 
-def toRadian(theta):
+def radian_convert(theta):
     return theta * math.pi / 180
 
-def toDegrees(theta):
+def degrees_convert(theta):
     return theta * 180 / math.pi
 
-def getGradient(p1, p2):
+def get_gradient(p1, p2):
     if p1[0] == p2[0]:
-        m = toRadian(90)
+        m = radian_convert(90)
     else:
         m = (p2[1] - p1[1]) / (p2[0] - p1[0])
     return m
 
-def getAngleFromGradient(gradient):
+def get_angleFromGradient(gradient):
     return math.atan(gradient)
 
-def getAngle(pos, origin):
-    m = getGradient(pos, origin)
-    thetaRad = getAngleFromGradient(m)
-    theta = round(toDegrees(thetaRad), 2)
+def get_angle(pos, origin):
+    m = get_gradient(pos, origin)
+    thetaRad = get_angleFromGradient(m)
+    theta = round(degrees_convert(thetaRad), 2)
     return theta
 
-def getPosOnCircumeference(theta, origin):
-    theta = toRadian(theta)
+def get_posOnCircumeference(theta, origin):
+    theta = radian_convert(theta)
     x = origin[0] + radius * math.cos(theta)
     y = origin[1] + radius * math.sin(theta)
     return (x, y)
@@ -42,15 +42,15 @@ class Bullet(pygame.sprite.Sprite):
         self.map_origin = shift_map
 
         self.u = u
-        self.theta = toRadian(abs(theta))
+        self.theta = radian_convert(abs(theta))
         self.origin = player_sp.rect.center
         self.x, self.y = self.origin
 
         self.ch = 0
         self.dx = 6
 
-        self.f = self.getTrajectory()
-        self.range = self.x + abs(self.getRange())
+        self.f = self.get_traj()
+        self.range = self.x + abs(self.get_range())
 
         self.path = []
 
@@ -61,19 +61,11 @@ class Bullet(pygame.sprite.Sprite):
         self.angle = 0  # l'angle pour faire tourner le projectile
 
 
-
-    def timeOfFlight(self):
-        return round((2 * self.u * math.sin(self.theta)) / g, 2)
-
-    def getRange(self):
+    def get_range(self):
         range_ = ((self.u ** 2) * 2 * math.sin(self.theta) * math.cos(self.theta)) / g
         return round(range_, 2)
 
-    def getMaxHeight(self):
-        h = ((self.u ** 2) * (math.sin(self.theta)) ** 2) / (2 * g)
-        return round(h, 2)
-
-    def getTrajectory(self):
+    def get_traj(self):
         return round(g / (2 * (self.u ** 2) * (math.cos(self.theta) ** 2)), 4)
 
     def getProjectilePos(self, x):
