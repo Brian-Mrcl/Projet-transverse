@@ -5,7 +5,7 @@
 ## Authors
 
 * Pierre MOURIES - [@PierreMo](https://github.com/PierreMo)
-* Brian MARCEL - [@Pandarock0](https://github.com/Pandarock0)
+* Brian MARCEL - [@Brian-Mrcl](https://github.com/Pandarock0)
 * Alexis LAUNAY-SCHAPMAN - [@AlexisLS05](https://github.com/AlexisLS05)
 * Anael DUBRION
 * Indiko JABUA
