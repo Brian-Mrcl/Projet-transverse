@@ -10,7 +10,7 @@
 * Anael DUBRION
 * Indiko JABUA
 
-[***➜ Link of our project : Projet-transverse  MARHESS ***](https://github.com/PierreMo/CDataframeL1)
+[***➜ Link of our project : Projet-transverse  MARHESS ***](https://github.com/Brian-Mrcl/Projet-transverse)
 
 ## Description of the project
 
